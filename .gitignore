@@ -1,0 +1,28 @@
+# Machine-isolated Python virtual environments (never sync between machines)
+env_*/
+env_local/
+.venv/
+env/
+
+# Compiled Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Pytest cache
+.pytest_cache/
+
+# Local SQLite database (contains live user/session data)
+*.db
+app_v2.db
+
+# Streamlit secrets (stored in Streamlit Cloud dashboard, not in code)
+.streamlit/secrets.toml
+
+# Operating system metadata
+.DS_Store
+Thumbs.db
+
+# OneDrive conflict artifacts
+*-DESKTOP-*.py
+*-LAPTOP-*.py
