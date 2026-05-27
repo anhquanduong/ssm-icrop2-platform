@@ -26,11 +26,22 @@ class TestSecureAuthentication8502(unittest.TestCase):
             self.original_init(inner_self, db_path=temp_path)
         DatabaseManager.__init__ = patched_init
         
+        # Patch streamlit.secrets
+        import streamlit as st
+        self.original_secrets = getattr(st, "secrets", None)
+        class MockSecrets(dict):
+            def get(self, key, default=None):
+                return super().get(key, default)
+        st.secrets = MockSecrets({"smtp": {"base_url": "http://localhost:8502"}})
+        
         # Clear simulator mailbox
         auth_secure.LOCAL_MAILBOX_SIMULATOR.clear()
 
     def tearDown(self):
         DatabaseManager.__init__ = self.original_init
+        import streamlit as st
+        if hasattr(self, "original_secrets"):
+            st.secrets = self.original_secrets
         import gc
         gc.collect()
         try:
