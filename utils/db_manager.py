@@ -17,10 +17,14 @@ class DatabaseManager:
         Initializes the database connection and guarantees parent folder existence.
         """
         if db_path is None:
-            # Default database location inside icrop2 structure
-            self.db_path = os.path.abspath(
-                os.path.join(os.path.dirname(__file__), "..", "app_v2.db")
-            )
+            # Default database location inside persistent storage
+            try:
+                from core.database import get_persistent_db_path
+                self.db_path = get_persistent_db_path()
+            except Exception:
+                self.db_path = os.path.abspath(
+                    os.path.join(os.path.dirname(__file__), "..", "app_v2.db")
+                )
         else:
             self.db_path = db_path
             

@@ -1087,6 +1087,84 @@ with col_left:
             st.session_state["icrop2_lon_key"] = manual_lon
             st.rerun()
         
+        # --- Soil Data Failover/Override System Interface ---
+        st.markdown("##### ⚙️ Soil Data Source & Failover Settings")
+        
+        # Check if isric_available key exists in session state
+        if "isric_available" not in st.session_state:
+            st.session_state["isric_available"] = True
+            
+        # 1. API Availability Display Alert
+        if not st.session_state["isric_available"]:
+            st.error("⚠️ ISRIC Soil Database is temporarily offline. Please select an alternate data source below.")
+            soil_source_selection = st.radio(
+                "Select Failover Soil Data Source:",
+                ["Use BOKU Fallback Data", "Input My Own Measured Soil Parameters"],
+                key="icrop2_failover_soil_source"
+            )
+        else:
+            soil_source_selection = "ISRIC API"
+            
+        # 2. Universal Override Checkbox
+        st.session_state["icrop2_soil_universal_override"] = st.checkbox(
+            "✍️ Override with manual soil core measurements",
+            value=st.session_state.get("icrop2_soil_universal_override", False),
+            help="Check this box to bypass cloud soil databases (ISRIC/BOKU) and input your exact field core parameters for 5 distinct layers."
+        )
+
+        # Expose individual soil layers override table/columns if checked or selected
+        if st.session_state["icrop2_soil_universal_override"] or (not st.session_state["isric_available"] and soil_source_selection == "Input My Own Measured Soil Parameters"):
+            st.markdown("##### 🔬 Manual Soil Core Measurements (5 Layers)")
+            st.info("Input soil physical parameters for 5 distinct horizons. These values directly shape the tipping-bucket simulation loop.")
+            
+            # Setup layer table header columns
+            hdr_cols = st.columns(5)
+            dlyers = []
+            duls = []
+            pwps = []
+            wls = []
+            
+            # Layer standard defaults
+            default_thicknesses = [150.0, 150.0, 300.0, 300.0, 300.0]
+            default_duls = [0.28, 0.28, 0.26, 0.26, 0.24]
+            default_pwps = [0.12, 0.12, 0.11, 0.11, 0.10]
+            default_wls = [0.20, 0.20, 0.18, 0.18, 0.16]
+            
+            for idx in range(5):
+                with hdr_cols[idx]:
+                    st.markdown(f"**Horizon {idx+1}**")
+                    dl = st.number_input(
+                        "Thick (mm)", 
+                        min_value=10.0, max_value=1000.0, 
+                        value=float(st.session_state.get(f"override_dlyer_{idx}", default_thicknesses[idx])), 
+                        key=f"override_dlyer_{idx}"
+                    )
+                    dul = st.number_input(
+                        "DUL (vol)", 
+                        min_value=0.05, max_value=0.50, 
+                        value=float(st.session_state.get(f"override_dul_{idx}", default_duls[idx])), 
+                        format="%.3f", 
+                        key=f"override_dul_{idx}"
+                    )
+                    pwp = st.number_input(
+                        "PWP (vol)", 
+                        min_value=0.01, max_value=0.40, 
+                        value=float(st.session_state.get(f"override_pwp_{idx}", default_pwps[idx])), 
+                        format="%.3f", 
+                        key=f"override_pwp_{idx}"
+                    )
+                    wl = st.number_input(
+                        "Init (vol)", 
+                        min_value=0.01, max_value=0.50, 
+                        value=float(st.session_state.get(f"override_wl_{idx}", default_wls[idx])), 
+                        format="%.3f", 
+                        key=f"override_wl_{idx}"
+                    )
+                    dlyers.append(dl)
+                    duls.append(dul)
+                    pwps.append(pwp)
+                    wls.append(wl)
+                    
         # Local compatibility mapping for downstream simulation and weather API components
         lat = st.session_state["latitude"]
         lon = st.session_state["longitude"]
@@ -1151,14 +1229,16 @@ with col_left:
         if st.button("📥 Download Soil Profile from ISRIC SoilGrids", key="download_soil_profile_btn", help="Fetch physical soil properties (Organic Matter, PAWC, Depth) from global ISRIC SoilGrids dataset for the current active coordinates."):
             with st.spinner("Fetching global ISRIC SoilGrids grid profile characteristics..."):
                 try:
-                    isric_profile = fetch_isric_soil_data(st.session_state["latitude"], st.session_state["longitude"])
+                    from utils.soil_handler import fetch_isric_soil_data_with_failover
+                    isric_profile = fetch_isric_soil_data_with_failover(st.session_state["latitude"], st.session_state["longitude"])
                     if isric_profile:
-                        st.session_state["icrop2_som_key"] = isric_profile.get("som", 2.5)
-                        st.session_state["icrop2_pawc_key"] = isric_profile.get("pawc", 150.0)
-                        st.session_state["icrop2_depth_key"] = int(isric_profile.get("root_zone_depth", 1200))
+                        # Map to UI states
+                        st.session_state["icrop2_som_key"] = isric_profile.get("organic_matter", 0.025) * 100.0
+                        st.session_state["icrop2_pawc_key"] = isric_profile.get("Soil_Water_Capacity", 180.0) / 1.2
+                        st.session_state["icrop2_depth_key"] = int(isric_profile.get("Max_Root_Depth", 1200))
                         
-                        if isric_profile.get("is_fallback", False):
-                            st.toast("⚠️ ISRIC SoilGrids API down or timed out. Local fallback deployed.", icon="🌍")
+                        if not st.session_state.get("isric_available", True):
+                            st.toast("⚠️ ISRIC Soil Database is temporarily offline. BOKU local fallback loaded.", icon="🌍")
                         else:
                             st.toast("✅ Soil profile successfully updated from ISRIC SoilGrids!", icon="🌍")
                         st.rerun()
@@ -1541,11 +1621,61 @@ with col_right:
                             weather_df = get_fallback_weather(start_str, end_str)
                             weather_status_msg = "Reverted to standard climatological weather baseline."
                     
-                    # 2. Extract Soil profile and map it using effective coordinates
-                    status_placeholder.warning("🌍 Performing spatial soil mapping via cloud API databases...")
-                    estimator = SpatialSoilEstimator(use_gee=False)
-                    soil_profile = estimator.get_soil_profile(effective_lat, effective_lon)
-                    soil_params = map_soil_profile_to_params(soil_profile)
+                    # 2. Extract Soil profile and map it using failover/override checks
+                    status_placeholder.warning("🌍 Resolving spatial soil parameters and overrides...")
+                    
+                    is_override_active = st.session_state.get("icrop2_soil_universal_override", False) or \
+                        (not st.session_state.get("isric_available", True) and st.session_state.get("icrop2_failover_soil_source") == "Input My Own Measured Soil Parameters")
+                    
+                    if is_override_active:
+                        # Construct from manual horizon inputs
+                        dlyers = [float(st.session_state[f"override_dlyer_{i}"]) for i in range(5)]
+                        duls = [float(st.session_state[f"override_dul_{i}"]) for i in range(5)]
+                        pwps = [float(st.session_state[f"override_pwp_{i}"]) for i in range(5)]
+                        wls = [float(st.session_state[f"override_wl_{i}"]) for i in range(5)]
+                        
+                        # SAT = DUL + 0.05
+                        sat = [round(min(0.50, d + 0.05), 3) for d in duls]
+                        # EXTR (Plant available water capacity fraction) = DUL - PWP
+                        extr = [round(max(0.05, d - p), 3) for d, p in zip(duls, pwps)]
+                        
+                        soil_params = {
+                            "NLYER": 5,
+                            "LDRAIN": 4,
+                            "SALB": 0.13,
+                            "U": 6.0,
+                            "CN": 75.0,
+                            "DLYER": dlyers,
+                            "SAT": sat,
+                            "DUL": duls,
+                            "EXTR": extr,
+                            "DRAINF": [0.4, 0.4, 0.4, 0.4, 0.4],
+                            "MAI": [1.0, 1.0, 1.0, 1.0, 1.0]
+                        }
+                        
+                        # Estimate organic matter and fractions for diagnostic display
+                        soil_profile = {
+                            "Max_Root_Depth": int(sum(dlyers)),
+                            "Soil_Water_Capacity": round(sum(d * e for d, e in zip(dlyers, extr)), 1),
+                            "clay_fraction": 0.25,
+                            "sand_fraction": 0.35,
+                            "organic_matter": float(st.session_state.get("icrop2_som_key", 2.5)) / 100.0,
+                            "bulk_density": 1.35,
+                            "source": "Manual Soil Core Measurements (User Override)"
+                        }
+                    else:
+                        # Standard routing with ISRIC API try-except failover
+                        try:
+                            from utils.soil_handler import fetch_isric_soil_data_with_failover
+                            soil_profile = fetch_isric_soil_data_with_failover(effective_lat, effective_lon)
+                            st.session_state["isric_available"] = True
+                        except Exception as isric_err:
+                            logger.warning(f"ISRIC API failed in run thread ({isric_err}). Using fallback.")
+                            st.session_state["isric_available"] = False
+                            from utils.soil_handler import load_boku_fallback_soil
+                            soil_profile = load_boku_fallback_soil(effective_lat, effective_lon)
+                            
+                        soil_params = map_soil_profile_to_params(soil_profile)
                     
                     # 3. Update the global crop parameter matrix in-memory so the computational loop runs custom parameters
                     DEFAULT_CROP_PARAMETERS[crop_type].update(active_profile)
