@@ -209,8 +209,42 @@ def check_and_seed_database(db_path: str, excel_path: Optional[str] = None):
             import_master_crop_parameters(excel_path, db_path)
         except Exception as excel_err:
             logger.warning(
-                f"Bypassing excel parameters ingestion. Excel path not accessible "
-                f"or error parsing spreadsheet: {excel_err}. Continuing with pre-seeded database."
+                f"Bypassing excel parameters ingestion (local Excel path not accessible/found: {excel_err}). "
+                f"Attempting JSON presets seeding fallback..."
             )
+            # Fallback to load from committed JSON file
+            json_path = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)), "..", "data", "seeded_crops_preset.json"
+            )
+            if os.path.exists(json_path):
+                logger.info(f"Seeding crops from committed JSON presets file: {json_path}")
+                try:
+                    with open(json_path, "r", encoding="utf-8") as f:
+                        records = json.load(f)
+                    crop_records = []
+                    for r in records:
+                        crop_records.append((
+                            r["crop_name"],
+                            r["cultivar"],
+                            r["parameters_json"],
+                            r["crop_produce_type"],
+                            r["lifecycle_strategy"],
+                            r["t_dormancy_trigger"],
+                            r["t_base_winter"]
+                        ))
+                    
+                    conn = sqlite3.connect(db_path)
+                    cursor = conn.cursor()
+                    cursor.executemany("""
+                        INSERT OR REPLACE INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, crop_records)
+                    conn.commit()
+                    conn.close()
+                    logger.info(f"Successfully seeded database with {len(crop_records)} records from JSON fallback.")
+                except Exception as json_err:
+                    logger.error(f"Failed to seed crops database using JSON fallback: {json_err}")
+            else:
+                logger.error(f"JSON presets file not found at: {json_path}. Database seeding aborted.")
     else:
         logger.info(f"Crop parameter database already contains {count} seeded varieties. Ingestion skipped.")

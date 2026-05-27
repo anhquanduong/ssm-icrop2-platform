@@ -1,0 +1,389 @@
+[
+  {
+    "crop_name": "FieldPea",
+    "cultivar": "Early",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.15, \"a_plapow_d\": 1.11, \"b_plapow_d\": -0.00137, \"SLA\": 0.021, \"FrzTh\": -4.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 2.0, \"TP1RUE\": 14.0, \"TP2RUE\": 30.0, \"TCRUE\": 38.0, \"KPAR\": 0.65, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.53, \"FLF1B\": 0.3, \"WTOPL\": 180.0, \"FLF2\": 0.13, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 46.0, \"PHYL2\": 46.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 20.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.033, \"GNCmax\": 0.065, \"MXNUP\": 0.6, \"TBD\": 2.0, \"TP1D\": 21.0, \"TP2D\": 30.0, \"TCD\": 40.0, \"CPP\": 18.0, \"ppsen\": 0.01, \"bdSOWEMR\": 4.5, \"bdEMRR1\": 20.0, \"bdR1R3\": 6.0, \"bdR3R5\": 4.0, \"bdR5R7\": 30.0, \"bdR7R8\": 2.0, \"bdBRP\": 4.5, \"bdTRP\": 24.5, \"bdBSG\": 34.5, \"bdTSG\": 64.5, \"bdTLM\": 39.5, \"bdTLP\": 49.5, \"bdBLS\": 34.5, \"bdBNF\": 12.0, \"height\": 4.0, \"heightMx\": 85.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 2.0, \"IRUE\": 2.0, \"cpp\": 18.0, \"bdEMREJU\": 20.0, \"PHYL\": 46.0, \"PLAPOW8\": 2.15, \"TKILL\": -4.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "FieldPea",
+    "cultivar": "Medium",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.15, \"a_plapow_d\": 1.11, \"b_plapow_d\": -0.00137, \"SLA\": 0.021, \"FrzTh\": -4.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 2.0, \"TP1RUE\": 14.0, \"TP2RUE\": 30.0, \"TCRUE\": 38.0, \"KPAR\": 0.65, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.53, \"FLF1B\": 0.3, \"WTOPL\": 180.0, \"FLF2\": 0.13, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 46.0, \"PHYL2\": 46.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 20.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.033, \"GNCmax\": 0.065, \"MXNUP\": 0.6, \"TBD\": 2.0, \"TP1D\": 21.0, \"TP2D\": 30.0, \"TCD\": 40.0, \"CPP\": 18.0, \"ppsen\": 0.01, \"bdSOWEMR\": 4.5, \"bdEMRR1\": 23.0, \"bdR1R3\": 6.5, \"bdR3R5\": 5.0, \"bdR5R7\": 35.0, \"bdR7R8\": 2.0, \"bdBRP\": 4.5, \"bdTRP\": 27.5, \"bdBSG\": 39.0, \"bdTSG\": 74.0, \"bdTLM\": 42.5, \"bdTLP\": 52.5, \"bdBLS\": 39.0, \"bdBNF\": 12.0, \"height\": 4.0, \"heightMx\": 85.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 2.0, \"IRUE\": 2.0, \"cpp\": 18.0, \"bdEMREJU\": 23.0, \"PHYL\": 46.0, \"PLAPOW8\": 2.15, \"TKILL\": -4.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "FieldPea",
+    "cultivar": "Late",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.15, \"a_plapow_d\": 1.11, \"b_plapow_d\": -0.00137, \"SLA\": 0.021, \"FrzTh\": -4.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 2.0, \"TP1RUE\": 14.0, \"TP2RUE\": 30.0, \"TCRUE\": 38.0, \"KPAR\": 0.65, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.53, \"FLF1B\": 0.3, \"WTOPL\": 180.0, \"FLF2\": 0.13, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 46.0, \"PHYL2\": 46.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 20.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.033, \"GNCmax\": 0.065, \"MXNUP\": 0.6, \"TBD\": 2.0, \"TP1D\": 21.0, \"TP2D\": 30.0, \"TCD\": 40.0, \"CPP\": 18.0, \"ppsen\": 0.01, \"bdSOWEMR\": 4.5, \"bdEMRR1\": 27.0, \"bdR1R3\": 7.0, \"bdR3R5\": 6.0, \"bdR5R7\": 40.0, \"bdR7R8\": 2.0, \"bdBRP\": 4.5, \"bdTRP\": 31.5, \"bdBSG\": 44.5, \"bdTSG\": 84.5, \"bdTLM\": 46.5, \"bdTLP\": 56.5, \"bdBLS\": 44.5, \"bdBNF\": 12.0, \"height\": 4.0, \"heightMx\": 85.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 2.0, \"IRUE\": 2.0, \"cpp\": 18.0, \"bdEMREJU\": 27.0, \"PHYL\": 46.0, \"PLAPOW8\": 2.15, \"TKILL\": -4.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "SpringBarley",
+    "cultivar": "Early",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.34, \"a_plapow_d\": 1.1718, \"b_plapow_d\": -0.0006, \"SLA\": 0.021, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 0.0, \"TP1RUE\": 10.0, \"TP2RUE\": 22.0, \"TCRUE\": 35.0, \"KPAR\": 0.65, \"IRUE1\": 2.48, \"CO2RUE\": 0.8, \"FLF1A\": 0.7829, \"FLF1B\": 0.2773, \"WTOPL\": 127.6, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.017, \"WDHI1\": 0.0, \"WDHI2\": 600.0, \"WDHI3\": 1200.0, \"WDHI4\": 3200.0, \"PHYL1\": 50.0, \"PHYL2\": 105.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 40.0, \"TEC350\": 5.8, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.01, \"SNCS2\": 0.002, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.025, \"GNCmin\": 0.0172, \"GNCmax\": 0.025, \"MXNUP\": 0.6, \"TBD\": 0.0, \"TP1D\": 27.5, \"TCD\": 40.0, \"CPP\": 16.0, \"ppsen\": 0.004, \"bdSOWEMR\": 2.5, \"bdEMRR1\": 1.0, \"bdR1R3\": 7.5, \"bdR3R5\": 8.5, \"bdR5R7\": 0.8999999999999999, \"bdR7R8\": 1.5, \"bdBRP\": \"i\", \"bdTRP\": \"i\", \"bdBSG\": \"i\", \"bdTSG\": \"i\", \"bdTLM\": 19.5, \"bdTLP\": 26.9, \"bdBLS\": 26.9, \"height\": 4.0, \"heightMx\": 115.0, \"rgrHgt\": 0.015, \"RUE_MAX\": 0.0, \"IRUE\": 0.0, \"TP2D\": 37.0, \"cpp\": 16.0, \"bdEMREJU\": 1.0, \"PHYL\": 50.0, \"PLAPOW8\": 2.34, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 5.8}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "SpringBarley",
+    "cultivar": "Medium",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.34, \"a_plapow_d\": 1.1718, \"b_plapow_d\": -0.0006, \"SLA\": 0.021, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 0.0, \"TP1RUE\": 10.0, \"TP2RUE\": 22.0, \"TCRUE\": 35.0, \"KPAR\": 0.65, \"IRUE1\": 2.48, \"CO2RUE\": 0.8, \"FLF1A\": 0.7829, \"FLF1B\": 0.2773, \"WTOPL\": 127.6, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.017, \"WDHI1\": 0.0, \"WDHI2\": 600.0, \"WDHI3\": 1200.0, \"WDHI4\": 3200.0, \"PHYL1\": 50.0, \"PHYL2\": 105.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 40.0, \"TEC350\": 5.8, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.01, \"SNCS2\": 0.002, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.025, \"GNCmin\": 0.0172, \"GNCmax\": 0.025, \"MXNUP\": 0.6, \"TBD\": 0.0, \"TP1D\": 27.5, \"TCD\": 40.0, \"CPP\": 16.0, \"ppsen\": 0.004, \"bdSOWEMR\": 2.5, \"bdEMRR1\": 1.0, \"bdR1R3\": 8.0, \"bdR3R5\": 9.5, \"bdR5R7\": 1.2, \"bdR7R8\": 1.5, \"bdTLM\": 21.0, \"bdTLP\": 28.7, \"bdBLS\": 28.7, \"height\": 4.0, \"heightMx\": 115.0, \"rgrHgt\": 0.015, \"RUE_MAX\": 0.0, \"IRUE\": 0.0, \"TP2D\": 37.0, \"cpp\": 16.0, \"bdEMREJU\": 1.0, \"PHYL\": 50.0, \"PLAPOW8\": 2.34, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 5.8}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "SpringBarley",
+    "cultivar": "Late",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.34, \"a_plapow_d\": 1.1718, \"b_plapow_d\": -0.0006, \"SLA\": 0.021, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 0.0, \"TP1RUE\": 10.0, \"TP2RUE\": 22.0, \"TCRUE\": 35.0, \"KPAR\": 0.65, \"IRUE1\": 2.48, \"CO2RUE\": 0.8, \"FLF1A\": 0.7829, \"FLF1B\": 0.2773, \"WTOPL\": 127.6, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.017, \"WDHI1\": 0.0, \"WDHI2\": 600.0, \"WDHI3\": 1200.0, \"WDHI4\": 3200.0, \"PHYL1\": 50.0, \"PHYL2\": 105.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 40.0, \"TEC350\": 5.8, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.01, \"SNCS2\": 0.002, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.025, \"GNCmin\": 0.0172, \"GNCmax\": 0.025, \"MXNUP\": 0.6, \"TBD\": 0.0, \"TP1D\": 27.5, \"TCD\": 40.0, \"CPP\": 16.0, \"ppsen\": 0.004, \"bdSOWEMR\": 2.5, \"bdEMRR1\": 1.0, \"bdR1R3\": 9.0, \"bdR3R5\": 10.5, \"bdR5R7\": 2.2, \"bdR7R8\": 1.5, \"bdTLM\": 23.0, \"bdTLP\": 31.7, \"bdBLS\": 31.7, \"height\": 4.0, \"heightMx\": 115.0, \"rgrHgt\": 0.015, \"RUE_MAX\": 0.0, \"IRUE\": 0.0, \"TP2D\": 37.0, \"cpp\": 16.0, \"bdEMREJU\": 1.0, \"PHYL\": 50.0, \"PLAPOW8\": 2.34, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 5.8}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "WinterBarley",
+    "cultivar": "Very early",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.34, \"a_plapow_d\": 1.1718, \"b_plapow_d\": -0.0006, \"SLA\": 0.021, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 0.0, \"TP1RUE\": 10.0, \"TP2RUE\": 22.0, \"TCRUE\": 35.0, \"KPAR\": 0.65, \"IRUE1\": 2.48, \"CO2RUE\": 0.8, \"FLF1A\": 0.7829, \"FLF1B\": 0.2773, \"WTOPL\": 127.6, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.017, \"WDHI1\": 0.0, \"WDHI2\": 600.0, \"WDHI3\": 1200.0, \"WDHI4\": 3200.0, \"PHYL1\": 50.0, \"PHYL2\": 105.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 200.0, \"EED\": 1200.0, \"GRTDP\": 40.0, \"TEC350\": 5.8, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.01, \"SNCS2\": 0.002, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.025, \"GNCmin\": 0.0172, \"GNCmax\": 0.025, \"MXNUP\": 0.6, \"TBD\": 0.0, \"TP1D\": 27.5, \"TCD\": 40.0, \"vsen\": 0.03, \"CPP\": 16.0, \"ppsen\": 0.004, \"bdSOWEMR\": 2.5, \"bdEMRR1\": 1.0, \"bdR1R3\": 8.0, \"bdR3R5\": 7.5, \"bdR5R7\": 0.7, \"bdR7R8\": 1.5, \"bdBRP\": \"i\", \"bdTRP\": \"i\", \"bdBSG\": \"i\", \"bdTSG\": \"i\", \"bdTLM\": 19.0, \"bdTLP\": 26.2, \"bdBLS\": 26.2, \"height\": 4.0, \"heightMx\": 115.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 0.0, \"IRUE\": 0.0, \"TP2D\": 37.0, \"cpp\": 16.0, \"bdEMREJU\": 1.0, \"PHYL\": 50.0, \"PLAPOW8\": 2.34, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 200.0, \"MEED\": 1200.0, \"TEC\": 5.8}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "WinterBarley",
+    "cultivar": "Early",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.34, \"a_plapow_d\": 1.1718, \"b_plapow_d\": -0.0006, \"SLA\": 0.021, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 0.0, \"TP1RUE\": 10.0, \"TP2RUE\": 22.0, \"TCRUE\": 35.0, \"KPAR\": 0.65, \"IRUE1\": 2.48, \"CO2RUE\": 0.8, \"FLF1A\": 0.7829, \"FLF1B\": 0.2773, \"WTOPL\": 127.6, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.017, \"WDHI1\": 0.0, \"WDHI2\": 600.0, \"WDHI3\": 1200.0, \"WDHI4\": 3200.0, \"PHYL1\": 50.0, \"PHYL2\": 105.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 200.0, \"EED\": 1200.0, \"GRTDP\": 40.0, \"TEC350\": 5.8, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.01, \"SNCS2\": 0.002, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.025, \"GNCmin\": 0.0172, \"GNCmax\": 0.025, \"MXNUP\": 0.6, \"TBD\": 0.0, \"TP1D\": 27.5, \"TCD\": 40.0, \"vsen\": 0.03, \"CPP\": 16.0, \"ppsen\": 0.004, \"bdSOWEMR\": 2.5, \"bdEMRR1\": 1.0, \"bdR1R3\": 8.5, \"bdR3R5\": 9.5, \"bdR5R7\": 0.8999999999999999, \"bdR7R8\": 1.5, \"bdBRP\": \"i\", \"bdTRP\": \"i\", \"bdBSG\": \"i\", \"bdTSG\": \"i\", \"bdTLM\": 21.5, \"bdTLP\": 28.9, \"bdBLS\": 28.9, \"height\": 4.0, \"heightMx\": 115.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 0.0, \"IRUE\": 0.0, \"TP2D\": 37.0, \"cpp\": 16.0, \"bdEMREJU\": 1.0, \"PHYL\": 50.0, \"PLAPOW8\": 2.34, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 200.0, \"MEED\": 1200.0, \"TEC\": 5.8}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "WinterBarley",
+    "cultivar": "Medium",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.34, \"a_plapow_d\": 1.1718, \"b_plapow_d\": -0.0006, \"SLA\": 0.021, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 0.0, \"TP1RUE\": 10.0, \"TP2RUE\": 22.0, \"TCRUE\": 35.0, \"KPAR\": 0.65, \"IRUE1\": 2.48, \"CO2RUE\": 0.8, \"FLF1A\": 0.7829, \"FLF1B\": 0.2773, \"WTOPL\": 127.6, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.017, \"WDHI1\": 0.0, \"WDHI2\": 600.0, \"WDHI3\": 1200.0, \"WDHI4\": 3200.0, \"PHYL1\": 50.0, \"PHYL2\": 105.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 200.0, \"EED\": 1200.0, \"GRTDP\": 40.0, \"TEC350\": 5.8, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.01, \"SNCS2\": 0.002, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.025, \"GNCmin\": 0.0172, \"GNCmax\": 0.025, \"MXNUP\": 0.6, \"TBD\": 0.0, \"TP1D\": 27.5, \"TCD\": 40.0, \"vsen\": 0.03, \"CPP\": 16.0, \"ppsen\": 0.004, \"bdSOWEMR\": 2.5, \"bdEMRR1\": 1.0, \"bdR1R3\": 9.0, \"bdR3R5\": 10.5, \"bdR5R7\": 1.2, \"bdR7R8\": 1.5, \"bdTLM\": 23.0, \"bdTLP\": 30.7, \"bdBLS\": 30.7, \"height\": 4.0, \"heightMx\": 115.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 0.0, \"IRUE\": 0.0, \"TP2D\": 37.0, \"cpp\": 16.0, \"bdEMREJU\": 1.0, \"PHYL\": 50.0, \"PLAPOW8\": 2.34, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 200.0, \"MEED\": 1200.0, \"TEC\": 5.8}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "WinterBarley",
+    "cultivar": "Late",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.34, \"a_plapow_d\": 1.1718, \"b_plapow_d\": -0.0006, \"SLA\": 0.021, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 0.0, \"TP1RUE\": 10.0, \"TP2RUE\": 22.0, \"TCRUE\": 35.0, \"KPAR\": 0.65, \"IRUE1\": 2.48, \"CO2RUE\": 0.8, \"FLF1A\": 0.7829, \"FLF1B\": 0.2773, \"WTOPL\": 127.6, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.017, \"WDHI1\": 0.0, \"WDHI2\": 600.0, \"WDHI3\": 1200.0, \"WDHI4\": 3200.0, \"PHYL1\": 50.0, \"PHYL2\": 105.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 200.0, \"EED\": 1200.0, \"GRTDP\": 40.0, \"TEC350\": 5.8, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.01, \"SNCS2\": 0.002, \"SLNG\": 3.1, \"SLNS\": 0.2, \"SNCG\": 0.025, \"GNCmin\": 0.0172, \"GNCmax\": 0.025, \"MXNUP\": 0.6, \"TBD\": 0.0, \"TP1D\": 27.5, \"TCD\": 40.0, \"vsen\": 0.03, \"CPP\": 16.0, \"ppsen\": 0.004, \"bdSOWEMR\": 2.5, \"bdEMRR1\": 1.0, \"bdR1R3\": 10.0, \"bdR3R5\": 11.5, \"bdR5R7\": 2.2, \"bdR7R8\": 1.5, \"bdTLM\": 25.0, \"bdTLP\": 33.7, \"bdBLS\": 33.7, \"height\": 4.0, \"heightMx\": 115.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 0.0, \"IRUE\": 0.0, \"TP2D\": 37.0, \"cpp\": 16.0, \"bdEMREJU\": 1.0, \"PHYL\": 50.0, \"PLAPOW8\": 2.34, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 200.0, \"MEED\": 1200.0, \"TEC\": 5.8}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "WinterBarley",
+    "cultivar": "Very late",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.34, \"a_plapow_d\": 1.1718, \"b_plapow_d\": -0.0006, \"SLA\": 0.021, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 0.0, \"TP1RUE\": 10.0, \"TP2RUE\": 22.0, \"TCRUE\": 35.0, \"KPAR\": 0.65, \"IRUE1\": 2.48, \"CO2RUE\": 0.8, \"FLF1A\": 0.7829, \"FLF1B\": 0.2773, \"WTOPL\": 127.6, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.017, \"WDHI1\": 0.0, \"WDHI2\": 600.0, \"WDHI3\": 1200.0, \"WDHI4\": 3200.0, \"PHYL1\": 50.0, \"PHYL2\": 105.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 200.0, \"EED\": 1200.0, \"GRTDP\": 40.0, \"TEC350\": 5.8, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.01, \"SNCS2\": 0.002, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.025, \"GNCmin\": 0.0172, \"GNCmax\": 0.025, \"MXNUP\": 0.6, \"TBD\": 0.0, \"TP1D\": 27.5, \"TCD\": 40.0, \"vsen\": 0.03, \"CPP\": 16.0, \"ppsen\": 0.004, \"bdSOWEMR\": 2.5, \"bdEMRR1\": 1.0, \"bdR1R3\": 11.5, \"bdR3R5\": 12.5, \"bdR5R7\": 3.2, \"bdR7R8\": 2.0, \"bdTLM\": 27.5, \"bdTLP\": 37.7, \"bdBLS\": 37.7, \"height\": 4.0, \"heightMx\": 115.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 0.0, \"IRUE\": 0.0, \"TP2D\": 37.0, \"cpp\": 16.0, \"bdEMREJU\": 1.0, \"PHYL\": 50.0, \"PLAPOW8\": 2.34, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 200.0, \"MEED\": 1200.0, \"TEC\": 5.8}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "SpringWheat",
+    "cultivar": "Early",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.34, \"a_plapow_d\": 1.1718, \"b_plapow_d\": -0.0006, \"SLA\": 0.021, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 0.0, \"TP1RUE\": 10.0, \"TP2RUE\": 22.0, \"TCRUE\": 35.0, \"KPAR\": 0.65, \"IRUE1\": 2.48, \"CO2RUE\": 0.8, \"FLF1A\": 0.7829, \"FLF1B\": 0.2773, \"WTOPL\": 127.6, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.017, \"WDHI1\": 0.0, \"WDHI2\": 600.0, \"WDHI3\": 1200.0, \"WDHI4\": 3200.0, \"PHYL1\": 65.0, \"PHYL2\": 120.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 30.0, \"TEC350\": 5.8, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.01, \"SNCS2\": 0.002, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.025, \"GNCmin\": 0.0172, \"GNCmax\": 0.026, \"MXNUP\": 0.6, \"TBD\": 0.0, \"TP1D\": 27.5, \"TCD\": 40.0, \"CPP\": 16.0, \"ppsen\": 0.004, \"bdSOWEMR\": 2.5, \"bdEMRR1\": 1.0, \"bdR1R3\": 9.0, \"bdR3R5\": 10.0, \"bdR5R7\": 1.7, \"bdR7R8\": 3.0, \"bdBRP\": \"i\", \"bdTRP\": \"i\", \"bdBSG\": \"i\", \"bdTSG\": \"i\", \"bdTLM\": 22.5, \"bdTLP\": 32.2, \"bdBLS\": 32.2, \"height\": 4.0, \"heightMx\": 115.0, \"rgrHgt\": 0.015, \"RUE_MAX\": 0.0, \"IRUE\": 0.0, \"TP2D\": 37.0, \"cpp\": 16.0, \"bdEMREJU\": 1.0, \"PHYL\": 65.0, \"PLAPOW8\": 2.34, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 5.8}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "SpringWheat",
+    "cultivar": "Medium",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.34, \"a_plapow_d\": 1.1718, \"b_plapow_d\": -0.0006, \"SLA\": 0.021, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 0.0, \"TP1RUE\": 10.0, \"TP2RUE\": 22.0, \"TCRUE\": 35.0, \"KPAR\": 0.65, \"IRUE1\": 2.48, \"CO2RUE\": 0.8, \"FLF1A\": 0.7829, \"FLF1B\": 0.2773, \"WTOPL\": 127.6, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.017, \"WDHI1\": 0.0, \"WDHI2\": 600.0, \"WDHI3\": 1200.0, \"WDHI4\": 3200.0, \"PHYL1\": 65.0, \"PHYL2\": 120.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 30.0, \"TEC350\": 5.8, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.01, \"SNCS2\": 0.002, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.025, \"GNCmin\": 0.0172, \"GNCmax\": 0.026, \"MXNUP\": 0.6, \"TBD\": 0.0, \"TP1D\": 27.5, \"TCD\": 40.0, \"CPP\": 16.0, \"ppsen\": 0.004, \"bdSOWEMR\": 2.5, \"bdEMRR1\": 1.0, \"bdR1R3\": 9.5, \"bdR3R5\": 11.0, \"bdR5R7\": 2.0, \"bdR7R8\": 3.0, \"bdTLM\": 24.0, \"bdTLP\": 34.0, \"bdBLS\": 34.0, \"height\": 4.0, \"heightMx\": 115.0, \"rgrHgt\": 0.015, \"RUE_MAX\": 0.0, \"IRUE\": 0.0, \"TP2D\": 37.0, \"cpp\": 16.0, \"bdEMREJU\": 1.0, \"PHYL\": 65.0, \"PLAPOW8\": 2.34, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 5.8}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "SpringWheat",
+    "cultivar": "Late",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.34, \"a_plapow_d\": 1.1718, \"b_plapow_d\": -0.0006, \"SLA\": 0.021, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 0.0, \"TP1RUE\": 10.0, \"TP2RUE\": 22.0, \"TCRUE\": 35.0, \"KPAR\": 0.65, \"IRUE1\": 2.48, \"CO2RUE\": 0.8, \"FLF1A\": 0.7829, \"FLF1B\": 0.2773, \"WTOPL\": 127.6, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.017, \"WDHI1\": 0.0, \"WDHI2\": 600.0, \"WDHI3\": 1200.0, \"WDHI4\": 3200.0, \"PHYL1\": 65.0, \"PHYL2\": 120.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 30.0, \"TEC350\": 5.8, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.01, \"SNCS2\": 0.002, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.025, \"GNCmin\": 0.0172, \"GNCmax\": 0.026, \"MXNUP\": 0.6, \"TBD\": 0.0, \"TP1D\": 27.5, \"TCD\": 40.0, \"CPP\": 16.0, \"ppsen\": 0.004, \"bdSOWEMR\": 2.5, \"bdEMRR1\": 1.0, \"bdR1R3\": 10.5, \"bdR3R5\": 12.0, \"bdR5R7\": 3.0, \"bdR7R8\": 3.0, \"bdTLM\": 26.0, \"bdTLP\": 37.0, \"bdBLS\": 37.0, \"height\": 4.0, \"heightMx\": 115.0, \"rgrHgt\": 0.015, \"RUE_MAX\": 0.0, \"IRUE\": 0.0, \"TP2D\": 37.0, \"cpp\": 16.0, \"bdEMREJU\": 1.0, \"PHYL\": 65.0, \"PLAPOW8\": 2.34, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 5.8}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "WinterWheat",
+    "cultivar": "Very early",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.34, \"a_plapow_d\": 1.1718, \"b_plapow_d\": -0.0006, \"SLA\": 0.021, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 0.0, \"TP1RUE\": 10.0, \"TP2RUE\": 22.0, \"TCRUE\": 35.0, \"KPAR\": 0.65, \"IRUE1\": 2.48, \"CO2RUE\": 0.8, \"FLF1A\": 0.7829, \"FLF1B\": 0.2773, \"WTOPL\": 127.6, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.017, \"WDHI1\": 0.0, \"WDHI2\": 600.0, \"WDHI3\": 1200.0, \"WDHI4\": 3200.0, \"PHYL1\": 65.0, \"PHYL2\": 120.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 30.0, \"TEC350\": 5.8, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.01, \"SNCS2\": 0.002, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.025, \"GNCmin\": 0.017, \"GNCmax\": 0.026, \"MXNUP\": 0.6, \"TBD\": 0.0, \"TP1D\": 27.5, \"TCD\": 40.0, \"vsen\": 0.03, \"CPP\": 16.0, \"ppsen\": 0.004, \"bdSOWEMR\": 2.5, \"bdEMRR1\": 1.2, \"bdR1R3\": 10.5, \"bdR3R5\": 9.0, \"bdR5R7\": 1.5, \"bdR7R8\": 4.0, \"bdBRP\": \"i\", \"bdTRP\": \"i\", \"bdBSG\": \"i\", \"bdTSG\": \"i\", \"bdTLM\": 23.2, \"bdTLP\": 33.7, \"bdBLS\": 33.7, \"height\": 4.0, \"heightMx\": 115.0, \"rgrHgt\": 0.015, \"RUE_MAX\": 0.0, \"IRUE\": 0.0, \"TP2D\": 37.0, \"cpp\": 16.0, \"bdEMREJU\": 1.2, \"PHYL\": 65.0, \"PLAPOW8\": 2.34, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 5.8}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "WinterWheat",
+    "cultivar": "Early",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.34, \"a_plapow_d\": 1.1718, \"b_plapow_d\": -0.0006, \"SLA\": 0.021, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 0.0, \"TP1RUE\": 10.0, \"TP2RUE\": 22.0, \"TCRUE\": 35.0, \"KPAR\": 0.65, \"IRUE1\": 2.48, \"CO2RUE\": 0.8, \"FLF1A\": 0.7829, \"FLF1B\": 0.2773, \"WTOPL\": 127.6, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.017, \"WDHI1\": 0.0, \"WDHI2\": 600.0, \"WDHI3\": 1200.0, \"WDHI4\": 3200.0, \"PHYL1\": 65.0, \"PHYL2\": 120.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 30.0, \"TEC350\": 5.8, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.01, \"SNCS2\": 0.002, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.025, \"GNCmin\": 0.017, \"GNCmax\": 0.026, \"MXNUP\": 0.6, \"TBD\": 0.0, \"TP1D\": 27.5, \"TCD\": 40.0, \"vsen\": 0.03, \"CPP\": 16.0, \"ppsen\": 0.004, \"bdSOWEMR\": 2.5, \"bdEMRR1\": 1.2, \"bdR1R3\": 11.0, \"bdR3R5\": 11.0, \"bdR5R7\": 1.7, \"bdR7R8\": 4.0, \"bdBRP\": \"i\", \"bdTRP\": \"i\", \"bdBSG\": \"i\", \"bdTSG\": \"i\", \"bdTLM\": 25.7, \"bdTLP\": 36.4, \"bdBLS\": 36.4, \"height\": 4.0, \"heightMx\": 115.0, \"rgrHgt\": 0.015, \"RUE_MAX\": 0.0, \"IRUE\": 0.0, \"TP2D\": 37.0, \"cpp\": 16.0, \"bdEMREJU\": 1.2, \"PHYL\": 65.0, \"PLAPOW8\": 2.34, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 5.8}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "WinterWheat",
+    "cultivar": "Medium",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.34, \"a_plapow_d\": 1.1718, \"b_plapow_d\": -0.0006, \"SLA\": 0.021, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 0.0, \"TP1RUE\": 10.0, \"TP2RUE\": \"<\", \"TCRUE\": 35.0, \"KPAR\": 0.65, \"IRUE1\": 2.48, \"CO2RUE\": 0.8, \"FLF1A\": 0.7829, \"FLF1B\": 0.2773, \"WTOPL\": 127.6, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.017, \"WDHI1\": 0.0, \"WDHI2\": 600.0, \"WDHI3\": 1200.0, \"WDHI4\": 3200.0, \"PHYL1\": 65.0, \"PHYL2\": 120.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 30.0, \"TEC350\": 5.8, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.01, \"SNCS2\": 0.002, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.025, \"GNCmin\": 0.0172, \"GNCmax\": 0.026, \"MXNUP\": 0.6, \"TBD\": 0.0, \"TP1D\": 27.5, \"TCD\": 40.0, \"vsen\": 0.03, \"CPP\": 16.0, \"ppsen\": 0.004, \"bdSOWEMR\": 2.5, \"bdEMRR1\": 1.2, \"bdR1R3\": 11.5, \"bdR3R5\": 12.0, \"bdR5R7\": 2.0, \"bdR7R8\": 4.0, \"bdTLM\": 27.2, \"bdTLP\": 38.2, \"bdBLS\": 38.2, \"height\": 4.0, \"heightMx\": 115.0, \"rgrHgt\": 0.015, \"RUE_MAX\": 0.0, \"IRUE\": 0.0, \"TP2D\": 37.0, \"cpp\": 16.0, \"bdEMREJU\": 1.2, \"PHYL\": 65.0, \"PLAPOW8\": 2.34, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 5.8}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "WinterWheat",
+    "cultivar": "Late",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.34, \"a_plapow_d\": 1.1718, \"b_plapow_d\": -0.0006, \"SLA\": 0.021, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 0.0, \"TP1RUE\": 10.0, \"TP2RUE\": 22.0, \"TCRUE\": 35.0, \"KPAR\": 0.65, \"IRUE1\": 2.48, \"CO2RUE\": 0.8, \"FLF1A\": 0.7829, \"FLF1B\": 0.2773, \"WTOPL\": 127.6, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.017, \"WDHI1\": 0.0, \"WDHI2\": 600.0, \"WDHI3\": 1200.0, \"WDHI4\": 3200.0, \"PHYL1\": 65.0, \"PHYL2\": 120.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 30.0, \"TEC350\": 5.8, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.01, \"SNCS2\": 0.002, \"SLNG\": 3.1, \"SLNS\": 0.2, \"SNCG\": 0.025, \"GNCmin\": 0.0172, \"GNCmax\": 0.026, \"MXNUP\": 0.6, \"TBD\": 0.0, \"TP1D\": 27.5, \"TCD\": 40.0, \"vsen\": 0.03, \"CPP\": 16.0, \"ppsen\": 0.004, \"bdSOWEMR\": 2.5, \"bdEMRR1\": 1.2, \"bdR1R3\": 12.5, \"bdR3R5\": 13.0, \"bdR5R7\": 3.0, \"bdR7R8\": 4.0, \"bdTLM\": 29.2, \"bdTLP\": 41.2, \"bdBLS\": 41.2, \"height\": 4.0, \"heightMx\": 115.0, \"rgrHgt\": 0.015, \"RUE_MAX\": 0.0, \"IRUE\": 0.0, \"TP2D\": 37.0, \"cpp\": 16.0, \"bdEMREJU\": 1.2, \"PHYL\": 65.0, \"PLAPOW8\": 2.34, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 5.8}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "WinterWheat",
+    "cultivar": "Very late",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.34, \"a_plapow_d\": 1.1718, \"b_plapow_d\": -0.0006, \"SLA\": 0.021, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 0.0, \"TP1RUE\": 10.0, \"TP2RUE\": 22.0, \"TCRUE\": 35.0, \"KPAR\": 0.65, \"IRUE1\": 2.48, \"CO2RUE\": 0.8, \"FLF1A\": 0.7829, \"FLF1B\": 0.2773, \"WTOPL\": 127.6, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.017, \"WDHI1\": 0.0, \"WDHI2\": 600.0, \"WDHI3\": 1200.0, \"WDHI4\": 3200.0, \"PHYL1\": 65.0, \"PHYL2\": 120.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 30.0, \"TEC350\": 5.8, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.01, \"SNCS2\": 0.002, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.025, \"GNCmin\": 0.0172, \"GNCmax\": 0.026, \"MXNUP\": 0.6, \"TBD\": 0.0, \"TP1D\": 27.5, \"TCD\": 40.0, \"vsen\": 0.03, \"CPP\": 16.0, \"ppsen\": 0.004, \"bdSOWEMR\": 2.5, \"bdEMRR1\": 1.2, \"bdR1R3\": 14.0, \"bdR3R5\": 16.0, \"bdR5R7\": 5.0, \"bdR7R8\": 5.0, \"bdTLM\": 33.7, \"bdTLP\": 48.7, \"bdBLS\": 48.7, \"height\": 4.0, \"heightMx\": 115.0, \"rgrHgt\": 0.015, \"RUE_MAX\": 0.0, \"IRUE\": 0.0, \"TP2D\": 37.0, \"cpp\": 16.0, \"bdEMREJU\": 1.2, \"PHYL\": 65.0, \"PLAPOW8\": 2.34, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 5.8}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Soybean",
+    "cultivar": "MG000",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.55, \"a_plapow_d\": 1.2, \"b_plapow_d\": -0.004, \"SLA\": 0.032, \"FrzTh\": 8.0, \"FrzLDR\": 0.01, \"HeatTH\": 37.0, \"HtLDR\": 0.1, \"TBRUE\": 10.0, \"TP1RUE\": 20.0, \"TP2RUE\": 30.0, \"TCRUE\": 40.0, \"KPAR\": 0.65, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.6, \"FLF1B\": 0.4, \"WTOPL\": 150.0, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 0.77, \"PDHI\": 0.03, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 60.0, \"PHYL2\": 60.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 30.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.055, \"GNCmax\": 0.07, \"MXNUP\": 0.8, \"TBD\": 7.0, \"TP1D\": 27.0, \"TP2D\": 34.0, \"TCD\": 45.0, \"CPP\": 15.8, \"ppsen\": -0.3, \"bdSOWEMR\": 3.5, \"bdEMRR1\": 18.0, \"bdR1R3\": 5.0, \"bdR3R5\": 3.0, \"bdR5R7\": 32.0, \"bdR7R8\": 2.0, \"bdBRP\": 3.5, \"bdTRP\": 61.5, \"bdBSG\": 29.5, \"bdTSG\": 61.5, \"bdTLM\": 36.5, \"bdTLP\": 46.5, \"bdBLS\": 29.5, \"bdBNF\": 12.0, \"height\": 4.0, \"heightMx\": 90.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 10.0, \"IRUE\": 10.0, \"cpp\": 15.8, \"bdEMREJU\": 18.0, \"PHYL\": 60.0, \"PLAPOW8\": 2.55, \"TKILL\": 8.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Soybean",
+    "cultivar": "MG00",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.55, \"a_plapow_d\": 1.2, \"b_plapow_d\": -0.004, \"SLA\": 0.032, \"FrzTh\": 8.0, \"FrzLDR\": 0.01, \"HeatTH\": 37.0, \"HtLDR\": 0.1, \"TBRUE\": 10.0, \"TP1RUE\": 20.0, \"TP2RUE\": 30.0, \"TCRUE\": 40.0, \"KPAR\": 0.65, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.6, \"FLF1B\": 0.4, \"WTOPL\": 150.0, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 0.77, \"PDHI\": 0.03, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 60.0, \"PHYL2\": 60.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 30.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.055, \"GNCmax\": 0.07, \"MXNUP\": 0.8, \"TBD\": 7.0, \"TP1D\": 27.0, \"TP2D\": 34.0, \"TCD\": 45.0, \"CPP\": 15.65, \"ppsen\": -0.3, \"bdSOWEMR\": 3.5, \"bdEMRR1\": 19.0, \"bdR1R3\": 5.5, \"bdR3R5\": 3.0, \"bdR5R7\": 34.0, \"bdR7R8\": 2.0, \"bdBRP\": 3.5, \"bdTRP\": 65.0, \"bdBSG\": 31.0, \"bdTSG\": 65.0, \"bdTLM\": 37.5, \"bdTLP\": 47.5, \"bdBLS\": 31.0, \"bdBNF\": 12.0, \"height\": 4.0, \"heightMx\": 90.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 10.0, \"IRUE\": 10.0, \"cpp\": 15.65, \"bdEMREJU\": 19.0, \"PHYL\": 60.0, \"PLAPOW8\": 2.55, \"TKILL\": 8.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Soybean",
+    "cultivar": "MG0",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.55, \"a_plapow_d\": 1.2, \"b_plapow_d\": -0.004, \"SLA\": 0.032, \"FrzTh\": 8.0, \"FrzLDR\": 0.01, \"HeatTH\": 37.0, \"HtLDR\": 0.1, \"TBRUE\": 10.0, \"TP1RUE\": 20.0, \"TP2RUE\": 30.0, \"TCRUE\": 40.0, \"KPAR\": 0.65, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.6, \"FLF1B\": 0.4, \"WTOPL\": 150.0, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 0.77, \"PDHI\": 0.03, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 60.0, \"PHYL2\": 60.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 30.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.055, \"GNCmax\": 0.07, \"MXNUP\": 0.8, \"TBD\": 7.0, \"TP1D\": 27.0, \"TP2D\": 34.0, \"TCD\": 45.0, \"CPP\": 15.5, \"ppsen\": -0.3, \"bdSOWEMR\": 3.5, \"bdEMRR1\": 20.0, \"bdR1R3\": 6.0, \"bdR3R5\": 3.0, \"bdR5R7\": 36.0, \"bdR7R8\": 2.0, \"bdBRP\": 3.5, \"bdTRP\": 68.5, \"bdBSG\": 32.5, \"bdTSG\": 68.5, \"bdTLM\": 38.5, \"bdTLP\": 48.5, \"bdBLS\": 32.5, \"bdBNF\": 12.0, \"height\": 4.0, \"heightMx\": 90.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 10.0, \"IRUE\": 10.0, \"cpp\": 15.5, \"bdEMREJU\": 20.0, \"PHYL\": 60.0, \"PLAPOW8\": 2.55, \"TKILL\": 8.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Soybean",
+    "cultivar": "MGII",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.55, \"a_plapow_d\": 1.2, \"b_plapow_d\": -0.004, \"SLA\": 0.032, \"FrzTh\": 8.0, \"FrzLDR\": 0.01, \"HeatTH\": 37.0, \"HtLDR\": 0.1, \"TBRUE\": 10.0, \"TP1RUE\": 20.0, \"TP2RUE\": 30.0, \"TCRUE\": 40.0, \"KPAR\": 0.65, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.6, \"FLF1B\": 0.4, \"WTOPL\": 150.0, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 0.77, \"PDHI\": 0.03, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 60.0, \"PHYL2\": 60.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 30.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.055, \"GNCmax\": 0.07, \"MXNUP\": 0.8, \"TBD\": 7.0, \"TP1D\": 27.0, \"TP2D\": 34.0, \"TCD\": 45.0, \"CPP\": 15.3, \"ppsen\": -0.3, \"bdSOWEMR\": 3.5, \"bdEMRR1\": 21.0, \"bdR1R3\": 6.5, \"bdR3R5\": 3.0, \"bdR5R7\": 38.0, \"bdR7R8\": 2.0, \"bdBRP\": 3.5, \"bdTRP\": 72.0, \"bdBSG\": 34.0, \"bdTSG\": 72.0, \"bdTLM\": 39.5, \"bdTLP\": 49.5, \"bdBLS\": 34.0, \"bdBNF\": 12.0, \"height\": 4.0, \"heightMx\": 90.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 10.0, \"IRUE\": 10.0, \"cpp\": 15.3, \"bdEMREJU\": 21.0, \"PHYL\": 60.0, \"PLAPOW8\": 2.55, \"TKILL\": 8.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Soybean",
+    "cultivar": "MGIII",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.55, \"a_plapow_d\": 1.2, \"b_plapow_d\": -0.004, \"SLA\": 0.032, \"FrzTh\": 8.0, \"FrzLDR\": 0.01, \"HeatTH\": 37.0, \"HtLDR\": 0.1, \"TBRUE\": 10.0, \"TP1RUE\": 20.0, \"TP2RUE\": 30.0, \"TCRUE\": 40.0, \"KPAR\": 0.65, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.6, \"FLF1B\": 0.4, \"WTOPL\": 150.0, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 60.0, \"PHYL2\": 60.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 30.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.033, \"GNCmax\": 0.085, \"MXNUP\": 0.6, \"TBD\": 7.0, \"TP1D\": 27.0, \"TP2D\": 34.0, \"TCD\": 45.0, \"CPP\": 15.8, \"ppsen\": -0.3, \"bdSOWEMR\": 3.5, \"bdEMRR1\": 24.0, \"bdR1R3\": 6.7, \"bdR3R5\": 3.2, \"bdR5R7\": 39.0, \"bdR7R8\": 2.0, \"bdBRP\": 3.5, \"bdTRP\": 76.4, \"bdBSG\": 37.400000000000006, \"bdTSG\": 76.4, \"bdTLM\": 42.5, \"bdTLP\": 52.5, \"bdBLS\": 37.400000000000006, \"bdBNF\": 13.0, \"height\": 4.0, \"heightMx\": 90.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 10.0, \"IRUE\": 10.0, \"cpp\": 15.8, \"bdEMREJU\": 24.0, \"PHYL\": 60.0, \"PLAPOW8\": 2.55, \"TKILL\": 8.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Soybean",
+    "cultivar": "MGIV",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.55, \"a_plapow_d\": 1.2, \"b_plapow_d\": -0.004, \"SLA\": 0.032, \"FrzTh\": 8.0, \"FrzLDR\": 0.01, \"HeatTH\": 37.0, \"HtLDR\": 0.1, \"TBRUE\": 10.0, \"TP1RUE\": 20.0, \"TP2RUE\": 30.0, \"TCRUE\": 40.0, \"KPAR\": 0.65, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.6, \"FLF1B\": 0.4, \"WTOPL\": 150.0, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 60.0, \"PHYL2\": 60.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 30.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.033, \"GNCmax\": 0.085, \"MXNUP\": 0.6, \"TBD\": 7.0, \"TP1D\": 27.0, \"TP2D\": 34.0, \"TCD\": 45.0, \"CPP\": 15.8, \"ppsen\": -0.3, \"bdSOWEMR\": 3.5, \"bdEMRR1\": 27.0, \"bdR1R3\": 6.9, \"bdR3R5\": 3.4000000000000004, \"bdR5R7\": 40.0, \"bdR7R8\": 2.0, \"bdBRP\": 3.5, \"bdTRP\": 80.8, \"bdBSG\": 40.8, \"bdTSG\": 80.8, \"bdTLM\": 45.5, \"bdTLP\": 55.5, \"bdBLS\": 40.8, \"bdBNF\": 14.0, \"height\": 4.0, \"heightMx\": 90.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 10.0, \"IRUE\": 10.0, \"cpp\": 15.8, \"bdEMREJU\": 27.0, \"PHYL\": 60.0, \"PLAPOW8\": 2.55, \"TKILL\": 8.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Soybean",
+    "cultivar": "MGV",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.55, \"a_plapow_d\": 1.2, \"b_plapow_d\": -0.004, \"SLA\": 0.032, \"FrzTh\": 8.0, \"FrzLDR\": 0.01, \"HeatTH\": 37.0, \"HtLDR\": 0.1, \"TBRUE\": 10.0, \"TP1RUE\": 20.0, \"TP2RUE\": 30.0, \"TCRUE\": 40.0, \"KPAR\": 0.65, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.6, \"FLF1B\": 0.4, \"WTOPL\": 150.0, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 60.0, \"PHYL2\": 60.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 30.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.033, \"GNCmax\": 0.085, \"MXNUP\": 0.6, \"TBD\": 7.0, \"TP1D\": 27.0, \"TP2D\": 34.0, \"TCD\": 45.0, \"CPP\": 15.8, \"ppsen\": -0.3, \"bdSOWEMR\": 3.5, \"bdEMRR1\": 27.3, \"bdR1R3\": 7.1000000000000005, \"bdR3R5\": 3.6000000000000005, \"bdR5R7\": 41.0, \"bdR7R8\": 2.0, \"bdBRP\": 3.5, \"bdTRP\": 82.5, \"bdBSG\": 41.5, \"bdTSG\": 82.5, \"bdTLM\": 45.8, \"bdTLP\": 55.8, \"bdBLS\": 41.5, \"bdBNF\": 15.0, \"height\": 4.0, \"heightMx\": 90.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 10.0, \"IRUE\": 10.0, \"cpp\": 15.8, \"bdEMREJU\": 27.3, \"PHYL\": 60.0, \"PLAPOW8\": 2.55, \"TKILL\": 8.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Soybean",
+    "cultivar": "MGVII",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.55, \"a_plapow_d\": 1.2, \"b_plapow_d\": -0.004, \"SLA\": 0.032, \"FrzTh\": 8.0, \"FrzLDR\": 0.01, \"HeatTH\": 37.0, \"HtLDR\": 0.1, \"TBRUE\": 10.0, \"TP1RUE\": 20.0, \"TP2RUE\": 30.0, \"TCRUE\": 40.0, \"KPAR\": 0.65, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.6, \"FLF1B\": 0.4, \"WTOPL\": 150.0, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 60.0, \"PHYL2\": 60.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 30.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.033, \"GNCmax\": 0.085, \"MXNUP\": 0.6, \"TBD\": 7.0, \"TP1D\": 27.0, \"TP2D\": 34.0, \"TCD\": 45.0, \"CPP\": 15.8, \"ppsen\": -0.3, \"bdSOWEMR\": 3.5, \"bdEMRR1\": 27.6, \"bdR1R3\": 7.300000000000001, \"bdR3R5\": 3.8000000000000007, \"bdR5R7\": 42.0, \"bdR7R8\": 2.0, \"bdBRP\": 3.5, \"bdTRP\": 84.2, \"bdBSG\": 42.2, \"bdTSG\": 84.2, \"bdTLM\": 46.1, \"bdTLP\": 56.1, \"bdBLS\": 42.2, \"bdBNF\": 16.0, \"height\": 4.0, \"heightMx\": 90.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 10.0, \"IRUE\": 10.0, \"cpp\": 15.8, \"bdEMREJU\": 27.6, \"PHYL\": 60.0, \"PLAPOW8\": 2.55, \"TKILL\": 8.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Soybean",
+    "cultivar": "MGV!!!",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.55, \"a_plapow_d\": 1.2, \"b_plapow_d\": -0.004, \"SLA\": 0.032, \"FrzTh\": 8.0, \"FrzLDR\": 0.01, \"HeatTH\": 37.0, \"HtLDR\": 0.1, \"TBRUE\": 10.0, \"TP1RUE\": 20.0, \"TP2RUE\": 30.0, \"TCRUE\": 40.0, \"KPAR\": 0.65, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.6, \"FLF1B\": 0.4, \"WTOPL\": 150.0, \"FLF2\": 0.1, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 60.0, \"PHYL2\": 60.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 30.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.033, \"GNCmax\": 0.085, \"MXNUP\": 0.6, \"TBD\": 7.0, \"TP1D\": 27.0, \"TP2D\": 34.0, \"TCD\": 45.0, \"CPP\": 15.8, \"ppsen\": -0.3, \"bdSOWEMR\": 3.5, \"bdEMRR1\": 27.900000000000002, \"bdR1R3\": 7.500000000000001, \"bdR3R5\": 4.000000000000001, \"bdR5R7\": 43.0, \"bdR7R8\": 2.0, \"bdBRP\": 3.5, \"bdTRP\": 85.9, \"bdBSG\": 42.900000000000006, \"bdTSG\": 85.9, \"bdTLM\": 46.400000000000006, \"bdTLP\": 56.400000000000006, \"bdBLS\": 42.900000000000006, \"bdBNF\": 17.0, \"height\": 4.0, \"heightMx\": 90.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 10.0, \"IRUE\": 10.0, \"cpp\": 15.8, \"bdEMREJU\": 27.900000000000002, \"PHYL\": 60.0, \"PLAPOW8\": 2.55, \"TKILL\": 8.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "FabaBean",
+    "cultivar": "Early",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.7, \"a_plapow_d\": 1.176, \"b_plapow_d\": -0.0044, \"SLA\": 0.03, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 2.0, \"TP1RUE\": 14.0, \"TP2RUE\": 30.0, \"TCRUE\": 38.0, \"KPAR\": 0.7, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.53, \"FLF1B\": 0.3, \"WTOPL\": 180.0, \"FLF2\": 0.13, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 58.0, \"PHYL2\": 58.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 30.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.033, \"GNCmax\": 0.065, \"MXNUP\": 0.6, \"TBD\": 2.0, \"TP1D\": 21.0, \"TP2D\": 30.0, \"TCD\": 40.0, \"CPP\": 18.0, \"ppsen\": 0.01, \"bdSOWEMR\": 5.5, \"bdEMRR1\": 20.0, \"bdR1R3\": 10.0, \"bdR3R5\": 10.0, \"bdR5R7\": 35.0, \"bdR7R8\": 2.0, \"bdBRP\": 5.5, \"bdTRP\": 25.5, \"bdBSG\": 45.5, \"bdTSG\": 80.5, \"bdTLM\": 40.5, \"bdTLP\": 50.5, \"bdBLS\": 45.5, \"bdBNF\": 12.0, \"height\": 4.0, \"heightMx\": 120.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 2.0, \"IRUE\": 2.0, \"cpp\": 18.0, \"bdEMREJU\": 20.0, \"PHYL\": 58.0, \"PLAPOW8\": 2.7, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "FabaBean",
+    "cultivar": "Medium",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.7, \"a_plapow_d\": 1.176, \"b_plapow_d\": -0.0044, \"SLA\": 0.03, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 2.0, \"TP1RUE\": 14.0, \"TP2RUE\": 30.0, \"TCRUE\": 38.0, \"KPAR\": 0.7, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.53, \"FLF1B\": 0.3, \"WTOPL\": 180.0, \"FLF2\": 0.13, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 58.0, \"PHYL2\": 58.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 30.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.033, \"GNCmax\": 0.065, \"MXNUP\": 0.6, \"TBD\": 2.0, \"TP1D\": 21.0, \"TP2D\": 30.0, \"TCD\": 40.0, \"CPP\": 18.0, \"ppsen\": 0.01, \"bdSOWEMR\": 5.5, \"bdEMRR1\": 23.0, \"bdR1R3\": 12.0, \"bdR3R5\": 12.0, \"bdR5R7\": 40.0, \"bdR7R8\": 2.0, \"bdBRP\": 5.5, \"bdTRP\": 28.5, \"bdBSG\": 52.5, \"bdTSG\": 92.5, \"bdTLM\": 43.5, \"bdTLP\": 53.5, \"bdBLS\": 52.5, \"bdBNF\": 12.0, \"height\": 4.0, \"heightMx\": 120.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 2.0, \"IRUE\": 2.0, \"cpp\": 18.0, \"bdEMREJU\": 23.0, \"PHYL\": 58.0, \"PLAPOW8\": 2.7, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "FabaBean",
+    "cultivar": "Late",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.7, \"a_plapow_d\": 1.176, \"b_plapow_d\": -0.0044, \"SLA\": 0.03, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 2.0, \"TP1RUE\": 14.0, \"TP2RUE\": 30.0, \"TCRUE\": 38.0, \"KPAR\": 0.7, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.53, \"FLF1B\": 0.3, \"WTOPL\": 180.0, \"FLF2\": 0.13, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 58.0, \"PHYL2\": 58.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 30.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.033, \"GNCmax\": 0.065, \"MXNUP\": 0.6, \"TBD\": 2.0, \"TP1D\": 21.0, \"TP2D\": 30.0, \"TCD\": 40.0, \"CPP\": 18.0, \"ppsen\": 0.01, \"bdSOWEMR\": 5.5, \"bdEMRR1\": 27.0, \"bdR1R3\": 14.0, \"bdR3R5\": 14.0, \"bdR5R7\": 45.0, \"bdR7R8\": 2.0, \"bdBRP\": 5.5, \"bdTRP\": 32.5, \"bdBSG\": 60.5, \"bdTSG\": 105.5, \"bdTLM\": 47.5, \"bdTLP\": 57.5, \"bdBLS\": 60.5, \"bdBNF\": 12.0, \"height\": 4.0, \"heightMx\": 120.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 2.0, \"IRUE\": 2.0, \"cpp\": 18.0, \"bdEMREJU\": 27.0, \"PHYL\": 58.0, \"PLAPOW8\": 2.7, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Chickpea",
+    "cultivar": "Early",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.07168, \"a_plapow_d\": 1.0612, \"b_plapow_d\": -0.002, \"SLA\": 0.021, \"FrzTh\": -4.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 2.0, \"TP1RUE\": 14.0, \"TP2RUE\": 30.0, \"TCRUE\": 38.0, \"KPAR\": 0.65, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.53, \"FLF1B\": 0.3, \"WTOPL\": 180.0, \"FLF2\": 0.13, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 46.0, \"PHYL2\": 46.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 20.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.033, \"GNCmax\": 0.065, \"MXNUP\": 0.6, \"TBD\": 2.0, \"TP1D\": 21.0, \"TP2D\": 30.0, \"TCD\": 40.0, \"CPP\": 18.0, \"ppsen\": 0.01, \"bdSOWEMR\": 4.0, \"bdEMRR1\": 20.0, \"bdR1R3\": 6.0, \"bdR3R5\": 4.0, \"bdR5R7\": 30.0, \"bdR7R8\": 2.0, \"bdBRP\": 4.0, \"bdTRP\": 24.0, \"bdBSG\": 34.0, \"bdTSG\": 64.0, \"bdTLM\": 39.0, \"bdTLP\": 49.0, \"bdBLS\": 34.0, \"bdBNF\": 12.0, \"height\": 4.0, \"heightMx\": 80.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 2.0, \"IRUE\": 2.0, \"cpp\": 18.0, \"bdEMREJU\": 20.0, \"PHYL\": 46.0, \"PLAPOW8\": 2.07168, \"TKILL\": -4.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Chickpea",
+    "cultivar": "Medium",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.07168, \"a_plapow_d\": 1.0612, \"b_plapow_d\": -0.002, \"SLA\": 0.021, \"FrzTh\": -4.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 2.0, \"TP1RUE\": 14.0, \"TP2RUE\": 30.0, \"TCRUE\": 38.0, \"KPAR\": 0.65, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.53, \"FLF1B\": 0.3, \"WTOPL\": 180.0, \"FLF2\": 0.13, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 46.0, \"PHYL2\": 46.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 20.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.033, \"GNCmax\": 0.065, \"MXNUP\": 0.6, \"TBD\": 2.0, \"TP1D\": 21.0, \"TP2D\": 30.0, \"TCD\": 40.0, \"CPP\": 18.0, \"ppsen\": 0.01, \"bdSOWEMR\": 4.0, \"bdEMRR1\": 23.0, \"bdR1R3\": 6.5, \"bdR3R5\": 5.0, \"bdR5R7\": 35.0, \"bdR7R8\": 2.0, \"bdBRP\": 4.0, \"bdTRP\": 27.0, \"bdBSG\": 38.5, \"bdTSG\": 73.5, \"bdTLM\": 42.0, \"bdTLP\": 52.0, \"bdBLS\": 38.5, \"bdBNF\": 12.0, \"height\": 4.0, \"heightMx\": 80.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 2.0, \"IRUE\": 2.0, \"cpp\": 18.0, \"bdEMREJU\": 23.0, \"PHYL\": 46.0, \"PLAPOW8\": 2.07168, \"TKILL\": -4.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Chickpea",
+    "cultivar": "Late",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.07168, \"a_plapow_d\": 1.0612, \"b_plapow_d\": -0.002, \"SLA\": 0.021, \"FrzTh\": -4.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 2.0, \"TP1RUE\": 14.0, \"TP2RUE\": 30.0, \"TCRUE\": 38.0, \"KPAR\": 0.65, \"IRUE1\": 2.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.53, \"FLF1B\": 0.3, \"WTOPL\": 180.0, \"FLF2\": 0.13, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 46.0, \"PHYL2\": 46.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 900.0, \"GRTDP\": 20.0, \"TEC350\": 4.5, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"WSSN\": 0.5, \"FLDKL\": 20.0, \"SNCS1\": 0.007, \"SNCS2\": 0.005, \"SLNG\": 2.5, \"SLNS\": 0.8, \"SNCG\": 0.03, \"GNCmin\": 0.033, \"GNCmax\": 0.065, \"MXNUP\": 0.6, \"TBD\": 2.0, \"TP1D\": 21.0, \"TP2D\": 30.0, \"TCD\": 40.0, \"CPP\": 18.0, \"ppsen\": 0.01, \"bdSOWEMR\": 4.0, \"bdEMRR1\": 27.0, \"bdR1R3\": 7.0, \"bdR3R5\": 6.0, \"bdR5R7\": 40.0, \"bdR7R8\": 2.0, \"bdBRP\": 4.0, \"bdTRP\": 31.0, \"bdBSG\": 44.0, \"bdTSG\": 84.0, \"bdTLM\": 46.0, \"bdTLP\": 56.0, \"bdBLS\": 44.0, \"bdBNF\": 12.0, \"height\": 4.0, \"heightMx\": 80.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 2.0, \"IRUE\": 2.0, \"cpp\": 18.0, \"bdEMREJU\": 27.0, \"PHYL\": 46.0, \"PLAPOW8\": 2.07168, \"TKILL\": -4.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 900.0, \"TEC\": 4.5}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Maize",
+    "cultivar": "Early",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 3.09, \"a_plapow_d\": 1.0378, \"b_plapow_d\": -0.0047, \"SLA\": 0.022, \"FrzTh\": 8.0, \"FrzLDR\": 0.01, \"HeatTH\": 37.0, \"HtLDR\": 0.1, \"TBRUE\": 8.0, \"TP1RUE\": 15.0, \"TP2RUE\": 35.0, \"TCRUE\": 45.0, \"KPAR\": 0.6, \"IRUE1\": 3.5, \"CO2RUE\": 0.35, \"FLF1A\": 0.6, \"FLF1B\": 0.16, \"WTOPL\": 240.0, \"FLF2\": 0.05, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 39.0, \"PHYL2\": 39.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 30.0, \"TEC350\": 9.0, \"TEC700\": 1.37, \"WSSG\": 0.25, \"WSSL\": 0.35, \"WSSD\": 0.1, \"FLDKL\": 20.0, \"SNCS1\": 0.005, \"SNCS2\": 0.003, \"SLNG\": 1.9, \"SLNS\": 0.3, \"SNCG\": 0.025, \"GNCmin\": 0.009, \"GNCmax\": 0.03, \"MXNUP\": 0.6, \"TBD\": 8.0, \"TP1D\": 34.0, \"TP2D\": 37.0, \"TCD\": 45.0, \"CPP\": 12.5, \"ppsen\": 0.52, \"bdSOWEMR\": 2.0, \"bdEMRR1\": 4.0, \"bdR1R3\": 23.0, \"bdBRP\": \"i\", \"bdTRP\": \"i\", \"bdBSG\": \"i\", \"bdTSG\": \"i\", \"bdTLM\": \"i\", \"bdTLP\": \"i\", \"bdBLS\": \"i\", \"height\": 4.0, \"heightMx\": 200.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 8.0, \"IRUE\": 8.0, \"cpp\": 12.5, \"bdEMREJU\": 4.0, \"PHYL\": 39.0, \"PLAPOW8\": 3.09, \"TKILL\": 8.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 9.0}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Maize",
+    "cultivar": "Medium",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 3.09, \"a_plapow_d\": 1.0378, \"b_plapow_d\": -0.0047, \"SLA\": 0.022, \"FrzTh\": 8.0, \"FrzLDR\": 0.01, \"HeatTH\": 37.0, \"HtLDR\": 0.1, \"TBRUE\": 8.0, \"TP1RUE\": 15.0, \"TP2RUE\": 35.0, \"TCRUE\": 45.0, \"KPAR\": 0.6, \"IRUE1\": 3.5, \"CO2RUE\": 0.35, \"FLF1A\": 0.6, \"FLF1B\": 0.16, \"WTOPL\": 240.0, \"FLF2\": 0.05, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 39.0, \"PHYL2\": 39.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 30.0, \"TEC350\": 9.0, \"TEC700\": 1.37, \"WSSG\": 0.25, \"WSSL\": 0.35, \"WSSD\": 0.1, \"FLDKL\": 20.0, \"SNCS1\": 0.005, \"SNCS2\": 0.003, \"SLNG\": 1.9, \"SLNS\": 0.3, \"SNCG\": 0.025, \"GNCmin\": 0.009, \"GNCmax\": 0.03, \"MXNUP\": 0.6, \"TBD\": 8.0, \"TP1D\": 34.0, \"TP2D\": 37.0, \"TCD\": 45.0, \"CPP\": 12.5, \"ppsen\": 0.52, \"bdSOWEMR\": 2.0, \"bdEMRR1\": 5.0, \"bdR1R3\": 26.0, \"bdBRP\": \"i\", \"bdTRP\": \"i\", \"bdBSG\": \"i\", \"bdTSG\": \"i\", \"bdTLM\": \"i\", \"bdTLP\": \"i\", \"bdBLS\": \"i\", \"height\": 4.0, \"heightMx\": 200.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 8.0, \"IRUE\": 8.0, \"cpp\": 12.5, \"bdEMREJU\": 5.0, \"PHYL\": 39.0, \"PLAPOW8\": 3.09, \"TKILL\": 8.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 9.0}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Maize",
+    "cultivar": "Late",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 3.09, \"a_plapow_d\": 1.0378, \"b_plapow_d\": -0.0047, \"SLA\": 0.022, \"FrzTh\": 8.0, \"FrzLDR\": 0.01, \"HeatTH\": 37.0, \"HtLDR\": 0.1, \"TBRUE\": 8.0, \"TP1RUE\": 15.0, \"TP2RUE\": 35.0, \"TCRUE\": 45.0, \"KPAR\": 0.6, \"IRUE1\": 3.5, \"CO2RUE\": 0.35, \"FLF1A\": 0.6, \"FLF1B\": 0.16, \"WTOPL\": 240.0, \"FLF2\": 0.05, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.02, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 39.0, \"PHYL2\": 39.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 30.0, \"TEC350\": 9.0, \"TEC700\": 1.37, \"WSSG\": 0.25, \"WSSL\": 0.35, \"WSSD\": 0.1, \"FLDKL\": 20.0, \"SNCS1\": 0.005, \"SNCS2\": 0.003, \"SLNG\": 1.9, \"SLNS\": 0.3, \"SNCG\": 0.025, \"GNCmin\": 0.009, \"GNCmax\": 0.03, \"MXNUP\": 0.6, \"TBD\": 8.0, \"TP1D\": 34.0, \"TP2D\": 37.0, \"TCD\": 45.0, \"CPP\": 12.5, \"ppsen\": 0.52, \"bdSOWEMR\": 2.0, \"bdEMRR1\": 6.0, \"bdR1R3\": 29.0, \"bdBRP\": \"i\", \"bdTRP\": \"i\", \"bdBSG\": \"i\", \"bdTSG\": \"i\", \"bdTLM\": \"i\", \"bdTLP\": \"i\", \"bdBLS\": \"i\", \"height\": 4.0, \"heightMx\": 200.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 8.0, \"IRUE\": 8.0, \"cpp\": 12.5, \"bdEMREJU\": 6.0, \"PHYL\": 39.0, \"PLAPOW8\": 3.09, \"TKILL\": 8.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 9.0}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Sorghum",
+    "cultivar": "Early",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.9, \"a_plapow_d\": 1.0378, \"b_plapow_d\": -0.0047, \"SLA\": 0.025, \"FrzTh\": 8.0, \"FrzLDR\": 0.01, \"HeatTH\": 40.0, \"HtLDR\": 0.1, \"TBRUE\": 8.0, \"TP1RUE\": 20.0, \"TP2RUE\": 35.0, \"TCRUE\": 50.0, \"KPAR\": 0.6, \"IRUE1\": 3.2, \"CO2RUE\": 0.35, \"FLF1A\": 0.7, \"FLF1B\": 0.15, \"WTOPL\": 180.0, \"FLF2\": 0.05, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.0185, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 50.0, \"PHYL2\": 50.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 30.0, \"TEC350\": 9.0, \"TEC700\": 1.37, \"WSSG\": 0.25, \"WSSL\": 0.35, \"WSSD\": 0.1, \"FLDKL\": 20.0, \"SNCS1\": 0.005, \"SNCS2\": 0.003, \"SLNG\": 1.9, \"SLNS\": 0.3, \"SNCG\": 0.025, \"GNCmin\": 0.009, \"GNCmax\": 0.03, \"MXNUP\": 0.45, \"TBD\": 8.0, \"TP1D\": 34.0, \"TP2D\": 37.0, \"TCD\": 45.0, \"CPP\": 14.0, \"ppsen\": 1.7538, \"bdSOWEMR\": 3.0, \"bdEMRR1\": 4.0, \"bdR1R3\": 25.0, \"bdBRP\": \"i\", \"bdTRP\": \"i\", \"bdBSG\": \"i\", \"bdTSG\": \"i\", \"bdTLM\": 32.0, \"bdTLP\": 37.0, \"bdBLS\": 37.0, \"height\": 4.0, \"heightMx\": 200.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 8.0, \"IRUE\": 8.0, \"cpp\": 14.0, \"bdEMREJU\": 4.0, \"PHYL\": 50.0, \"PLAPOW8\": 2.9, \"TKILL\": 8.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 9.0}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Sorghum",
+    "cultivar": "Medium",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.9, \"a_plapow_d\": 1.0378, \"b_plapow_d\": -0.0047, \"SLA\": 0.025, \"FrzTh\": 8.0, \"FrzLDR\": 0.01, \"HeatTH\": 40.0, \"HtLDR\": 0.1, \"TBRUE\": 8.0, \"TP1RUE\": 20.0, \"TP2RUE\": 35.0, \"TCRUE\": 50.0, \"KPAR\": 0.6, \"IRUE1\": 3.2, \"CO2RUE\": 0.35, \"FLF1A\": 0.7, \"FLF1B\": 0.15, \"WTOPL\": 180.0, \"FLF2\": 0.05, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.0185, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 50.0, \"PHYL2\": 50.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 30.0, \"TEC350\": 9.0, \"TEC700\": 1.37, \"WSSG\": 0.25, \"WSSL\": 0.35, \"WSSD\": 0.1, \"FLDKL\": 20.0, \"SNCS1\": 0.005, \"SNCS2\": 0.003, \"SLNG\": 1.9, \"SLNS\": 0.3, \"SNCG\": 0.025, \"GNCmin\": 0.009, \"GNCmax\": 0.03, \"MXNUP\": 0.45, \"TBD\": 8.0, \"TP1D\": 34.0, \"TP2D\": 37.0, \"TCD\": 45.0, \"CPP\": 14.0, \"ppsen\": 1.7538, \"bdSOWEMR\": 3.0, \"bdEMRR1\": 7.0, \"bdR1R3\": 30.0, \"bdBRP\": \"i\", \"bdTRP\": \"i\", \"bdBSG\": \"i\", \"bdTSG\": \"i\", \"bdTLM\": 40.0, \"bdTLP\": 45.0, \"bdBLS\": 45.0, \"height\": 4.0, \"heightMx\": 200.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 8.0, \"IRUE\": 8.0, \"cpp\": 14.0, \"bdEMREJU\": 7.0, \"PHYL\": 50.0, \"PLAPOW8\": 2.9, \"TKILL\": 8.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 9.0}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Sorghum",
+    "cultivar": "Late",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 2.9, \"a_plapow_d\": 1.0378, \"b_plapow_d\": -0.0047, \"SLA\": 0.025, \"FrzTh\": 8.0, \"FrzLDR\": 0.01, \"HeatTH\": 40.0, \"HtLDR\": 0.1, \"TBRUE\": 8.0, \"TP1RUE\": 20.0, \"TP2RUE\": 35.0, \"TCRUE\": 50.0, \"KPAR\": 0.6, \"IRUE1\": 3.2, \"CO2RUE\": 0.35, \"FLF1A\": 0.7, \"FLF1B\": 0.15, \"WTOPL\": 180.0, \"FLF2\": 0.05, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.0185, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 50.0, \"PHYL2\": 50.0, \"leaf_number_phyl2\": 6.0, \"DEPORT\": 150.0, \"EED\": 1200.0, \"GRTDP\": 30.0, \"TEC350\": 9.0, \"TEC700\": 1.37, \"WSSG\": 0.25, \"WSSL\": 0.35, \"WSSD\": 0.1, \"FLDKL\": 20.0, \"SNCS1\": 0.005, \"SNCS2\": 0.003, \"SLNG\": 1.9, \"SLNS\": 0.3, \"SNCG\": 0.025, \"GNCmin\": 0.009, \"GNCmax\": 0.03, \"MXNUP\": 0.45, \"TBD\": 8.0, \"TP1D\": 34.0, \"TP2D\": 37.0, \"TCD\": 45.0, \"CPP\": 14.0, \"ppsen\": 1.7538, \"bdSOWEMR\": 3.0, \"bdEMRR1\": 10.0, \"bdR1R3\": 35.0, \"bdBRP\": \"i\", \"bdTRP\": \"i\", \"bdBSG\": \"i\", \"bdTSG\": \"i\", \"bdTLM\": 48.0, \"bdTLP\": 53.0, \"bdBLS\": 53.0, \"height\": 4.0, \"heightMx\": 200.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 8.0, \"IRUE\": 8.0, \"cpp\": 14.0, \"bdEMREJU\": 10.0, \"PHYL\": 50.0, \"PLAPOW8\": 2.9, \"TKILL\": 8.0, \"FRZLDR\": 0.01, \"iDEPORT\": 150.0, \"MEED\": 1200.0, \"TEC\": 9.0}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Potato",
+    "cultivar": "Early",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 3.2, \"a_plapow_d\": 1.21, \"b_plapow_d\": -0.0568, \"SLA\": 0.02, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 2.0, \"TP1RUE\": 12.0, \"TP2RUE\": 24.0, \"TCRUE\": 34.0, \"KPAR\": 0.72, \"IRUE1\": 3.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.65, \"FLF1B\": 0.4, \"WTOPL\": 160.0, \"FLF2\": 0.5, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.035, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 35.0, \"PHYL2\": 35.0, \"leaf_number_phyl2\": 12.0, \"DEPORT\": 15.0, \"EED\": 900.0, \"GRTDP\": 20.0, \"TEC350\": 6.7, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.04, \"SNCS2\": 0.01, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.048, \"GNCmin\": 0.006, \"GNCmax\": 0.02, \"MXNUP\": 0.9, \"TBD\": 2.0, \"TP1D\": 20.0, \"TCD\": 30.0, \"CPP\": 12.0, \"ppsen\": -0.05, \"bdEMRR1\": 12.0, \"bdR1R3\": 15.0, \"bdR3R5\": 50.0, \"bdR5R7\": 10.0, \"bdBRP\": \"i\", \"bdTRP\": \"i\", \"bdBSG\": \"i\", \"bdTSG\": \"i\", \"bdTLM\": \"i\", \"bdTLP\": \"i\", \"bdBLS\": \"i\", \"bdBNF\": \"i\", \"height\": 4.0, \"heightMx\": 90.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 2.0, \"IRUE\": 2.0, \"TP2D\": 37.0, \"cpp\": 12.0, \"bdSOWEMR\": 4.5, \"bdEMREJU\": 12.0, \"PHYL\": 35.0, \"PLAPOW8\": 3.2, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 15.0, \"MEED\": 900.0, \"TEC\": 6.7}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Potato",
+    "cultivar": "Medium",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 3.2, \"a_plapow_d\": 1.21, \"b_plapow_d\": -0.0568, \"SLA\": 0.02, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 2.0, \"TP1RUE\": 12.0, \"TP2RUE\": 24.0, \"TCRUE\": 34.0, \"KPAR\": 0.72, \"IRUE1\": 3.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.65, \"FLF1B\": 0.4, \"WTOPL\": 160.0, \"FLF2\": 0.5, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.035, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 35.0, \"PHYL2\": 35.0, \"leaf_number_phyl2\": 12.0, \"DEPORT\": 15.0, \"EED\": 900.0, \"GRTDP\": 20.0, \"TEC350\": 6.7, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.04, \"SNCS2\": 0.01, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.048, \"GNCmin\": 0.006, \"GNCmax\": 0.02, \"MXNUP\": 0.9, \"TBD\": 2.0, \"TP1D\": 20.0, \"TCD\": 30.0, \"CPP\": 12.0, \"ppsen\": -0.05, \"bdEMRR1\": 16.0, \"bdR1R3\": 20.0, \"bdR3R5\": 60.0, \"bdR5R7\": 10.0, \"bdBRP\": \"i\", \"bdTRP\": \"i\", \"bdBSG\": \"i\", \"bdTSG\": \"i\", \"bdTLM\": \"i\", \"bdTLP\": \"i\", \"bdBLS\": \"i\", \"bdBNF\": \"i\", \"height\": 4.0, \"heightMx\": 90.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 2.0, \"IRUE\": 2.0, \"TP2D\": 37.0, \"cpp\": 12.0, \"bdSOWEMR\": 4.5, \"bdEMREJU\": 16.0, \"PHYL\": 35.0, \"PLAPOW8\": 3.2, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 15.0, \"MEED\": 900.0, \"TEC\": 6.7}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  },
+  {
+    "crop_name": "Potato",
+    "cultivar": "late",
+    "parameters_json": "{\"PLACON\": 1.0, \"PLAPOW\": 3.2, \"a_plapow_d\": 1.21, \"b_plapow_d\": -0.0568, \"SLA\": 0.02, \"FrzTh\": -5.0, \"FrzLDR\": 0.01, \"HeatTH\": 30.0, \"HtLDR\": 0.1, \"TBRUE\": 2.0, \"TP1RUE\": 12.0, \"TP2RUE\": 24.0, \"TCRUE\": 34.0, \"KPAR\": 0.72, \"IRUE1\": 3.0, \"CO2RUE\": 0.8, \"FLF1A\": 0.65, \"FLF1B\": 0.4, \"WTOPL\": 160.0, \"FLF2\": 0.5, \"FRTRL\": 0.22, \"GCC\": 1.0, \"PDHI\": 0.035, \"WDHI1\": 0.0, \"WDHI2\": 0.0, \"WDHI3\": 9999.0, \"WDHI4\": 9999.0, \"PHYL1\": 35.0, \"PHYL2\": 35.0, \"leaf_number_phyl2\": 12.0, \"DEPORT\": 15.0, \"EED\": 900.0, \"GRTDP\": 20.0, \"TEC350\": 6.7, \"TEC700\": 1.37, \"WSSG\": 0.3, \"WSSL\": 0.4, \"WSSD\": 0.4, \"FLDKL\": 20.0, \"SNCS1\": 0.04, \"SNCS2\": 0.01, \"SLNG\": 2.6, \"SLNS\": 0.2, \"SNCG\": 0.048, \"GNCmin\": 0.006, \"GNCmax\": 0.02, \"MXNUP\": 0.9, \"TBD\": 2.0, \"TP1D\": 20.0, \"TCD\": 30.0, \"CPP\": 12.0, \"ppsen\": -0.05, \"bdEMRR1\": 20.0, \"bdR1R3\": 25.0, \"bdR3R5\": 70.0, \"bdR5R7\": 10.0, \"bdBRP\": \"i\", \"bdTRP\": \"i\", \"bdBSG\": \"i\", \"bdTSG\": \"i\", \"bdTLM\": \"i\", \"bdTLP\": \"i\", \"bdBLS\": \"i\", \"bdBNF\": \"i\", \"height\": 4.0, \"heightMx\": 90.0, \"rgrHgt\": 0.007, \"RUE_MAX\": 2.0, \"IRUE\": 2.0, \"TP2D\": 37.0, \"cpp\": 12.0, \"bdSOWEMR\": 4.5, \"bdEMREJU\": 20.0, \"PHYL\": 35.0, \"PLAPOW8\": 3.2, \"TKILL\": -5.0, \"FRZLDR\": 0.01, \"iDEPORT\": 15.0, \"MEED\": 900.0, \"TEC\": 6.7}",
+    "crop_produce_type": "Fruit/Seed",
+    "lifecycle_strategy": "Annual (Single-Season)",
+    "t_dormancy_trigger": 5.0,
+    "t_base_winter": 0.0
+  }
+]
