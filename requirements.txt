@@ -7,4 +7,5 @@ plotly
 requests
 cryptography
 xlrd
+streamlit-cookies-controller
 
