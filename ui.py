@@ -540,6 +540,20 @@ with st.sidebar:
         "label": "Default: Sorghum (BOKU)"
     }
     
+    # - Seeded preset profiles from crops table
+    try:
+        seeded_crops = db.get_seeded_crops()
+        for sc in seeded_crops:
+            lbl = f"📦 Preset: {sc['crop_name']} ({sc['cultivar']})"
+            profile_options.append(lbl)
+            profile_map[lbl] = {
+                "crop_type": sc["crop_type"],
+                "parameters": sc["parameters"],
+                "label": lbl
+            }
+    except Exception as e:
+        logger.warning(f"Failed to add seeded crop presets: {e}")
+        
     # - Dynamic sqlite custom profiles
     for dp in db_profiles:
         c_name = dp["crop_name"]

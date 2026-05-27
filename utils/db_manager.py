@@ -128,6 +128,35 @@ class DatabaseManager:
             conn.commit()
             logger.info("SQLite database schema and secure migrations verified successfully.")
 
+        try:
+            from utils.db_initializer import check_and_seed_database
+            check_and_seed_database(self.db_path)
+        except Exception as e:
+            logger.warning(f"Database auto-seeding bypassed: {e}")
+
+    def get_seeded_crops(self) -> List[Dict[str, Any]]:
+        """
+        Retrieves all seeded crop varieties from the crops table.
+        """
+        seeded = []
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            try:
+                cursor.execute("SELECT id, crop_name, cultivar, parameters_json FROM crops")
+                for r in cursor.fetchall():
+                    params = json.loads(r[3])
+                    c_type = "Sorghum" if "bdEJUPNI" in params else "Maize"
+                    seeded.append({
+                        "id": r[0],
+                        "crop_name": r[1],
+                        "cultivar": r[2],
+                        "crop_type": c_type,
+                        "parameters": params
+                    })
+            except Exception as e:
+                logger.warning(f"Failed to fetch seeded crops: {e}")
+        return seeded
+
     def save_crop_profile(
         self, 
         user_id: int, 
