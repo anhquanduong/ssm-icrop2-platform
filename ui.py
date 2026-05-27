@@ -1049,13 +1049,13 @@ with col_left:
             max_value=max_val,
             help="Select a simulation period. Global reanalysis data is available from 1940 to 2026."
         )
-        sim_years = st.number_input("⏳ Simulation Duration (Years):", min_value=1, max_value=10, value=1)
         
         if isinstance(timeframe_input, (list, tuple)) and len(timeframe_input) == 2:
             start_date, end_date = timeframe_input
         else:
             start_date = timeframe_input[0] if isinstance(timeframe_input, (list, tuple)) and len(timeframe_input) > 0 else timeframe_input
             end_date = start_date
+        sim_years = max(1, end_date.year - start_date.year + 1)
     
     # 4. Sowing Configuration and Time Slicing
     st.markdown("##### 4. Sowing Window & Time Slicing")
@@ -1072,18 +1072,10 @@ with col_left:
             available_years = WeatherTimeSlicer.get_available_years(weather_df)
             
     if available_years:
-        target_year = st.selectbox(
-            "Select Target Simulation Year",
-            available_years,
-            help="Select the calendar year to isolate for this crop growth simulation cycle."
-        )
+        total_years = len(available_years)
+        st.info(f"📅 Ingested Weather Timeline: {total_years} Year(s) detected ({available_years[0]} to {available_years[-1]}).")
     else:
-        target_year = st.selectbox(
-            "Select Target Simulation Year",
-            [datetime.date.today().year],
-            disabled=True,
-            help="Upload weather data or configure coordinates first."
-        )
+        st.info("📅 Ingested Weather Timeline: No weather data detected. Upload weather data or configure coordinates first.")
         
     sowing_doy = st.number_input(
         "Sowing Day of Year (DOY)",
@@ -1475,8 +1467,8 @@ with col_right:
                     else:
                         # Option 1: fetch from Open-Meteo API
                         # 3. TIMEFRAME VALIDATION LOGIC
-                        if (end_date - start_date).days > 3 * 365:
-                            st.error("❌ Selected date range exceeds the maximum limit of 3 years. Please choose a shorter timeframe.")
+                        if (end_date - start_date).days > 50 * 365:
+                            st.error("❌ Selected date range exceeds the maximum limit of 50 years. Please choose a shorter timeframe.")
                             st.stop()
                         if end_date > datetime.date.today():
                             st.warning("⚠️ You selected a date range in the future. Open-Meteo historical climate reanalysis data might not yet exist for future dates.")
@@ -1509,17 +1501,27 @@ with col_right:
                     # 4. Instantiate & Execute simulation engine asynchronously
                     status_placeholder.warning("⚙️ Preparing background execution container...")
                     
-                    # First slice the crop season weather using WeatherTimeSlicer
-                    sliced_weather = WeatherTimeSlicer.slice_crop_season(
-                        weather_df=weather_df,
-                        target_year=target_year,
-                        sowing_doy=sowing_doy,
-                        simulation_duration=150
-                    )
+                    # Slice weather starting from sowing DOY of the first available year to the very end
+                    weather_sorted = weather_df.copy()
+                    weather_sorted.columns = [str(c).upper() for c in weather_sorted.columns]
+                    weather_sorted = weather_sorted.sort_values(by=['YEAR', 'DOY']).reset_index(drop=True)
+                    available_years = sorted(weather_sorted['YEAR'].unique())
+                    start_year = available_years[0]
+                    
+                    start_row = weather_sorted[(weather_sorted['YEAR'] == start_year) & (weather_sorted['DOY'] == sowing_doy)]
+                    if start_row.empty:
+                        start_row = weather_sorted[(weather_sorted['YEAR'] == start_year) & (weather_sorted['DOY'] >= sowing_doy)]
+                        if start_row.empty:
+                            start_row = weather_sorted[weather_sorted['YEAR'] == start_year]
+                            
+                    start_idx = start_row.index[0] if not start_row.empty else 0
+                    sliced_weather = weather_sorted.iloc[start_idx:].copy().reset_index(drop=True)
                     
                     if sliced_weather.empty:
-                        raise ValueError(f"No weather records available in sliced window starting at DOY {sowing_doy} in {target_year}.")
+                        raise ValueError(f"No weather records available in sliced window starting at DOY {sowing_doy} in {start_year}.")
                         
+                    sim_years = len(sliced_weather['YEAR'].unique())
+                    
                     advanced_options = advanced_options.copy()
                     advanced_options["sim_years"] = sim_years
                     

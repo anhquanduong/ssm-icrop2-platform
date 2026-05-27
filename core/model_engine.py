@@ -502,19 +502,37 @@ class SSMiCropEngine:
         pollen_sterility = 0.0
         
         # 4. Daily Calculation Loop
-        days_in_dataset = len(self.weather_df)
-        total_steps = sim_years * days_in_dataset
+        self.weather_df.columns = [str(c).upper() for c in self.weather_df.columns]
+        available_years = sorted(self.weather_df['YEAR'].unique())
+        first_year = available_years[0]
+        total_steps = len(self.weather_df)
         
         temp_history = []
         in_dormancy = False
         consec_spring_days = 0
         wwood = 0.0
         
+        year_day_counter = 0
+        
         for step in range(total_steps):
-            yr = step // days_in_dataset
-            idx = step % days_in_dataset
+            row_wth = self.weather_df.iloc[step]
+            current_year = int(row_wth["YEAR"])
+            yr = current_year - first_year
             
-            if idx == 0 and yr > 0:
+            is_transition_day = False
+            if step > 0 and self.weather_df.iloc[step]["YEAR"] != self.weather_df.iloc[step - 1]["YEAR"]:
+                is_transition_day = True
+                
+            if is_transition_day:
+                year_day_counter = 0
+            else:
+                if step == 0:
+                    year_day_counter = 0
+                else:
+                    year_day_counter += 1
+            idx = year_day_counter
+            
+            if is_transition_day:
                 if lifecycle_strategy == "Annual (Single-Season)":
                     cbd = 0.0
                     msnn = 1.0
@@ -556,7 +574,7 @@ class SSMiCropEngine:
                     pass
                     
             if mat_flag == 1:
-                if sim_years == 1:
+                if len(available_years) == 1:
                     break
                 else:
                     if lifecycle_strategy == "Annual (Single-Season)":
@@ -574,7 +592,6 @@ class SSMiCropEngine:
                         gst = 0.0
                         sgr = 0.0
                 
-            row_wth = self.weather_df.iloc[idx]
             doy = int(row_wth["DOY"])
             srad = float(row_wth["SRAD"])
             tmax = float(row_wth["TMAX"])
@@ -1205,7 +1222,11 @@ class SSMiCropEngine:
             })
             
             # Reset cyclical perennial grain pool at the end of the year's daily loop if mature
-            if idx == days_in_dataset - 1:
+            is_last_day_of_year = False
+            if step == total_steps - 1 or self.weather_df.iloc[step]["YEAR"] != self.weather_df.iloc[step + 1]["YEAR"]:
+                is_last_day_of_year = True
+                
+            if is_last_day_of_year:
                 if lifecycle_strategy == "Cyclical Perennial" and cbd > bd_mat:
                     wgrn = 0.0
                     hi = 0.0
