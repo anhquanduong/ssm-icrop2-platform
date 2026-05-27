@@ -65,5 +65,5 @@ if not exist %VENV_DIR%\Scripts\activate (
 
 call %VENV_DIR%\Scripts\activate
 echo SSM-iCrop 2 Environment Ready. Launching dashboard...
-streamlit run ui.py
+streamlit run ui.py --server.port 8502
 pause
