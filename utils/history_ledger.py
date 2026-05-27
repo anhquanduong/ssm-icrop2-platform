@@ -32,6 +32,7 @@ def format_simulation_run(results_df: pd.DataFrame, scenario_name: str) -> pd.Da
     # Extract columns, converting WTOP (g/m²) to BIOMASS (kg/ha)
     compiled_df = pd.DataFrame({
         "DOY": results_df["DOY"].values,
+        "Year": results_df["Year"].values if "Year" in results_df.columns else results_df["DOY"].values,
         "Simulation_Timeline_Days": results_df["Simulation_Timeline_Days"].values if "Simulation_Timeline_Days" in results_df.columns else results_df["DOY"].values,
         "BIOMASS": results_df["WTOP"].values * 10.0,  # Conversion factor: 1 g/m² = 10 kg/ha
         "LAI": results_df["LAI"].values,

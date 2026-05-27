@@ -143,6 +143,46 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+def configure_multi_year_chart(fig, df):
+    """
+    Unified multi-year Plotly Express visual formatter. 
+    Injects vertical dashed dividers at year boundaries and centers 
+    styled background-padded text annotations representing calendar years.
+    """
+    fig.update_layout(
+        hovermode="x unified",
+        hoverlabel=dict(bgcolor="rgba(255, 255, 255, 0.95)", font_size=12)
+    )
+    if df is not None and "Year" in df.columns:
+        av_years = sorted(df["Year"].unique())
+        total_years = len(av_years)
+        if total_years > 1:
+            # Add vertical boundaries
+            for i in range(1, total_years):
+                day_marker = i * 365
+                fig.add_vline(
+                    x=day_marker,
+                    line_dash="dash",
+                    line_color="#9CA3AF",
+                    line_width=1.5
+                )
+            # Center year annotations at the top
+            for i in range(total_years):
+                yr_val = av_years[i]
+                mid_point = i * 365 + 182
+                fig.add_annotation(
+                    x=mid_point,
+                    y=0.98,
+                    yref="paper",
+                    text=f"Year {i+1} ({int(yr_val)})",
+                    showarrow=False,
+                    font=dict(size=10, color="#4B5563", weight="bold"),
+                    bgcolor="rgba(243, 244, 246, 0.85)",
+                    bordercolor="#E5E7EB",
+                    borderwidth=1,
+                    borderpad=3
+                )
+
 def map_soil_profile_to_params(profile: dict) -> dict:
     """
     Maps the single-pixel physical soil profile from SpatialSoilEstimator
@@ -1627,6 +1667,7 @@ with col_right:
                         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
                     )
                     fig_biomass.update_xaxes(showspikes=True, spikethickness=1, spikedash="dot", spikemode="across", dtick=365)
+                    configure_multi_year_chart(fig_biomass, results_df)
                     st.plotly_chart(fig_biomass, width='stretch')
                     
                 # 7. Plot Leaf Area Index (LAI) Trajectory
@@ -1647,6 +1688,7 @@ with col_right:
                         yaxis=dict(gridcolor='#E5E7EB')
                     )
                     fig_lai.update_xaxes(showspikes=True, spikethickness=1, spikedash="dot", spikemode="across", dtick=365)
+                    configure_multi_year_chart(fig_lai, results_df)
                     st.plotly_chart(fig_lai, width='stretch')
                     
                 # 8. Plot Daily Temperature Development Stress Impact Chart
@@ -1676,7 +1718,48 @@ with col_right:
                         yaxis=dict(gridcolor='#E5E7EB', range=[-0.05, 1.05])
                     )
                     fig_temp.update_xaxes(showspikes=True, spikethickness=1, spikedash="dot", spikemode="across", dtick=365)
+                    configure_multi_year_chart(fig_temp, results_df)
                     st.plotly_chart(fig_temp, width='stretch')
+                    
+                # 9. Render Annual Performance & Soil Continuity Matrix
+                if "Year" in results_df.columns:
+                    av_years = sorted(results_df["Year"].unique())
+                    if len(av_years) >= 1:
+                        st.markdown("### 📊 Annual Performance & Soil Continuity Matrix")
+                        st.markdown(
+                            "This matrix compiles structural crop performance indicators alongside residual year-end soil metrics, "
+                            "demonstrating continuous biophysical carry-over dynamics across consecutive years."
+                        )
+                        matrix_rows = []
+                        for i, yr_val in enumerate(av_years):
+                            yr_rel = i + 1
+                            df_yr = results_df[results_df["Current_Year"] == yr_rel]
+                            if not df_yr.empty:
+                                max_lai_y = df_yr["LAI"].max()
+                                end_sw_y = df_yr["SOIL_WATER"].iloc[-1]
+                                end_n_y = df_yr["SOIL_N"].iloc[-1]
+                                
+                                # Determine yield: peak of the year's produce pool
+                                prod_type = df_yr["crop_produce_type"].iloc[0] if "crop_produce_type" in df_yr.columns else "Fruit/Seed"
+                                if prod_type == "Tuber/Root":
+                                    yield_val_y = df_yr["WROOT"].max()
+                                elif prod_type == "Vegetative Foliage":
+                                    yield_val_y = df_yr["WLF"].max()
+                                else:
+                                    yield_val_y = df_yr["WGRN"].max()
+                                    
+                                yield_tha_y = yield_val_y * 0.01  # Convert g/m2 to t/ha
+                                
+                                matrix_rows.append({
+                                    "Simulation Year": f"Year {yr_rel} ({int(yr_val)})",
+                                    "Final Yield (t/ha)": round(yield_tha_y, 2),
+                                    "Max Leaf Area Index (LAI)": round(max_lai_y, 2),
+                                    "Ending Soil Water (mm)": round(end_sw_y, 1),
+                                    "Ending Available Nitrogen (kg N/ha)": round(end_n_y, 1)
+                                })
+                        
+                        summary_df = pd.DataFrame(matrix_rows)
+                        st.dataframe(summary_df, use_container_width=True)
                     
                 # Render Troubleshooting/Diagnostic logs
                 simulation_results = results_df
@@ -1751,6 +1834,7 @@ with col_right:
                     yaxis=dict(gridcolor='#E5E7EB')
                 )
                 fig_biomass.update_xaxes(showspikes=True, spikethickness=1, spikedash="dot", spikemode="across", dtick=365)
+                configure_multi_year_chart(fig_biomass, combined_df)
                 st.plotly_chart(fig_biomass, width='stretch')
                 
                 # Multi-scenario LAI Comparison Chart
@@ -1771,6 +1855,7 @@ with col_right:
                     yaxis=dict(gridcolor='#E5E7EB')
                 )
                 fig_lai.update_xaxes(showspikes=True, spikethickness=1, spikedash="dot", spikemode="across", dtick=365)
+                configure_multi_year_chart(fig_lai, combined_df)
                 st.plotly_chart(fig_lai, width='stretch')
             else:
                 st.warning("⚠️ Please select at least one scenario run to build charts.")

@@ -1173,6 +1173,7 @@ class SSMiCropEngine:
             sim_data.append({
                 "crop_produce_type": active_produce_type,
                 "lifecycle_strategy": lifecycle_strategy,
+                "Year": current_year,
                 "Current_Year": yr + 1,
                 "Simulation_Timeline_Days": yr * 365 + doy,
                 "WROOT": round(wroot, 2),
