@@ -188,6 +188,12 @@ def map_soil_profile_to_params(profile: dict) -> dict:
 # ----------------- SESSION STATE & SECURITY INITIALIZATION -----------------
 if "icrop2_logged_in" not in st.session_state:
     st.session_state.icrop2_logged_in = False
+if "authenticated" not in st.session_state:
+    st.session_state["authenticated"] = False
+if "latitude" not in st.session_state:
+    st.session_state["latitude"] = 21.0285
+if "longitude" not in st.session_state:
+    st.session_state["longitude"] = 105.8542
 if "icrop2_user_id" not in st.session_state:
     st.session_state.icrop2_user_id = None
 if "icrop2_username" not in st.session_state:
@@ -254,6 +260,7 @@ if "session_token" in query_params:
     s_success, s_payload = verify_session_token(s_token)
     if s_success:
         st.session_state.icrop2_logged_in = True
+        st.session_state["authenticated"] = True
         st.session_state.icrop2_user_id = s_payload["user_id"]
         st.session_state.icrop2_username = s_payload["username"]
         st.session_state.icrop2_email = s_payload["email"]
@@ -271,6 +278,7 @@ if not st.session_state.icrop2_logged_in:
         s_success, s_payload = verify_session_token(token)
         if s_success:
             st.session_state.icrop2_logged_in = True
+            st.session_state["authenticated"] = True
             st.session_state.icrop2_user_id = s_payload["user_id"]
             st.session_state.icrop2_username = s_payload["username"]
             st.session_state.icrop2_email = s_payload["email"]
@@ -331,6 +339,7 @@ if not st.session_state.icrop2_logged_in:
             success, msg, payload = authenticate_secure_user(login_user, login_pass, ip_addr)
             if success and payload:
                 st.session_state.icrop2_logged_in = True
+                st.session_state["authenticated"] = True
                 st.session_state.icrop2_user_id = payload["user_id"]
                 st.session_state.icrop2_username = payload["username"]
                 st.session_state.icrop2_email = payload["email"]
@@ -342,6 +351,8 @@ if not st.session_state.icrop2_logged_in:
                 
                 controller.set("icrop2_session_token", payload["session_token"])
                 st.success("Access Granted! Loading C4 simulation core...")
+                import time
+                time.sleep(0.5)  # Buffer to allow browser storage write before Streamlit rerun
                 st.rerun()
             else:
                 st.error(msg)
@@ -441,6 +452,7 @@ if not st.session_state.icrop2_logged_in:
 st.sidebar.markdown(f"👤 **Account:** `{st.session_state.icrop2_username}`")
 if st.sidebar.button("🚪 Log Out", width='stretch'):
     st.session_state.icrop2_logged_in = False
+    st.session_state["authenticated"] = False
     st.session_state.icrop2_user_id = None
     st.session_state.icrop2_username = None
     st.session_state.icrop2_email = None
@@ -451,6 +463,8 @@ if st.sidebar.button("🚪 Log Out", width='stretch'):
     st.session_state.icrop2_session_key = None
     
     controller.remove("icrop2_session_token")
+    import time
+    time.sleep(0.5)  # Buffer to allow browser storage removal before Streamlit rerun
     st.rerun()
 
 # ----------------- SIDEBAR CONFIGURATION (Crop parameter routing & tweak panel) -----------------
@@ -821,6 +835,8 @@ with st.sidebar:
                 st.session_state["icrop2_lat_key"], st.session_state["icrop2_lon_key"] = 10.0330, 105.7830
             elif preset == "Custom Coordinates":
                 st.session_state["icrop2_lat_key"], st.session_state["icrop2_lon_key"] = 21.0285, 105.8542
+            st.session_state["latitude"] = st.session_state["icrop2_lat_key"]
+            st.session_state["longitude"] = st.session_state["icrop2_lon_key"]
             st.rerun()
             
         default_lat = st.session_state["icrop2_lat_key"]
@@ -942,21 +958,25 @@ with col_left:
         st.markdown("##### 2. Interactive Map (Click to Select Coordinates)")
         
         # 1. WIDGET KEY STATE SEEDING
+        if "latitude" not in st.session_state:
+            st.session_state["latitude"] = 21.0285
+        if "longitude" not in st.session_state:
+            st.session_state["longitude"] = 105.8542
         if "icrop2_lat_key" not in st.session_state:
-            st.session_state["icrop2_lat_key"] = 21.0285  # Default Lat
+            st.session_state["icrop2_lat_key"] = st.session_state["latitude"]
         if "icrop2_lon_key" not in st.session_state:
-            st.session_state["icrop2_lon_key"] = 105.8542 # Default Lon
+            st.session_state["icrop2_lon_key"] = st.session_state["longitude"]
             
         # 2. DECOUPLED FOLIUM ENGINE RENDERING
         m = folium.Map(
-            location=[st.session_state["icrop2_lat_key"], st.session_state["icrop2_lon_key"]], 
+            location=[st.session_state["latitude"], st.session_state["longitude"]], 
             zoom_start=6
         )
         
         # Add dynamic marker precisely at target coordinates
         folium.Marker(
-            location=[st.session_state["icrop2_lat_key"], st.session_state["icrop2_lon_key"]],
-            popup=f"Active Location: {st.session_state['icrop2_lat_key']:.4f}, {st.session_state['icrop2_lon_key']:.4f}",
+            location=[st.session_state["latitude"], st.session_state["longitude"]],
+            popup=f"Active Location: {st.session_state['latitude']:.4f}, {st.session_state['longitude']:.4f}",
             tooltip="Click anywhere on the map to select new coordinates",
             icon=folium.Icon(color="green", icon="info-sign")
         ).add_to(m)
@@ -964,45 +984,58 @@ with col_left:
         # Render component inside st_folium with explicit center and zoom
         map_data = st_folium(
             m,
-            center=[st.session_state["icrop2_lat_key"], st.session_state["icrop2_lon_key"]],
+            center=[st.session_state["latitude"], st.session_state["longitude"]],
             zoom=6,
             width=700,
-            height=400,
-            key="reactive_ssm_map"
+            height=450,
+            key="icrop2_folium_map"
         )
         
-        # 3. PRIORITY OVERWRITE CLASSIFICATION
-        if map_data and map_data.get("last_clicked"):
-            new_lat = map_data["last_clicked"]["lat"]
-            new_lon = map_data["last_clicked"]["lng"]
-            
-            # If the map click provides values different from the locked state keys, force update
-            if new_lat != st.session_state["icrop2_lat_key"] or new_lon != st.session_state["icrop2_lon_key"]:
-                st.session_state["icrop2_lat_key"] = new_lat
-                st.session_state["icrop2_lon_key"] = new_lon
+        # 3. INTERCEPT AND PARSE MAP CLICKS SECURELY ACROSS RERUNS (Deferred Soil Fetching)
+        if st.session_state.get("icrop2_folium_map") and "last_clicked" in st.session_state["icrop2_folium_map"]:
+            click_data = st.session_state["icrop2_folium_map"]["last_clicked"]
+            if click_data:
+                new_lat = click_data.get("lat", st.session_state["latitude"])
+                new_lon = click_data.get("lng", st.session_state["longitude"])
                 
-                # Fetch global SoilGrids characteristics asynchronously
-                with st.spinner("Fetching global ISRIC SoilGrids grid profile characteristics..."):
-                    isric_profile = fetch_isric_soil_data(new_lat, new_lon)
-                    if isric_profile:
-                        st.session_state["icrop2_som_key"] = isric_profile["som"]
-                        st.session_state["icrop2_pawc_key"] = isric_profile["pawc"]
-                        st.session_state["icrop2_depth_key"] = int(isric_profile["root_zone_depth"])
-                        
-                        if isric_profile.get("is_fallback", False):
-                            st.toast("⚠️ ISRIC SoilGrids API down or timed out. Local fallback deployed.", icon="🌍")
-                
-                st.rerun()  # Halt execution and render immediately with the new coordinates
+                # If map click provides new values, update session states without auto-fetching soil (deferred to button)
+                if new_lat != st.session_state["latitude"] or new_lon != st.session_state["longitude"]:
+                    st.session_state["latitude"] = new_lat
+                    st.session_state["longitude"] = new_lon
+                    st.session_state["icrop2_lat_key"] = new_lat
+                    st.session_state["icrop2_lon_key"] = new_lon
+                    st.rerun()
 
-        # 4. BALANCED NUMERIC ENTRY SYNC
+        # 4. BALANCED NUMERIC ENTRY SYNC BINDING DIRECTLY TO PERSISTENT STATE KEYS
         c_lat, c_lon = st.columns(2)
         
-        c_lat.number_input("Latitude", format="%.4f", key="lat_key")
-        c_lon.number_input("Longitude", format="%.4f", key="lon_key")
+        manual_lat = c_lat.number_input(
+            "Latitude", 
+            format="%.4f", 
+            value=float(st.session_state["latitude"]),
+            key="manual_latitude_input"
+        )
+        manual_lon = c_lon.number_input(
+            "Longitude", 
+            format="%.4f", 
+            value=float(st.session_state["longitude"]),
+            key="manual_longitude_input"
+        )
+        
+        # Sync manually typed coordinates immediately to session states
+        if manual_lat != st.session_state["latitude"]:
+            st.session_state["latitude"] = manual_lat
+            st.session_state["icrop2_lat_key"] = manual_lat
+            st.rerun()
+            
+        if manual_lon != st.session_state["longitude"]:
+            st.session_state["longitude"] = manual_lon
+            st.session_state["icrop2_lon_key"] = manual_lon
+            st.rerun()
         
         # Local compatibility mapping for downstream simulation and weather API components
-        lat = st.session_state["icrop2_lat_key"]
-        lon = st.session_state["icrop2_lon_key"]
+        lat = st.session_state["latitude"]
+        lon = st.session_state["longitude"]
         
         # Date range timeframe selector
         st.markdown("##### 3. Simulation Timeframe")
@@ -1068,10 +1101,31 @@ with col_left:
 
     # 1. STRUCTURED SOIL PARAMETER EXPANDER
     with st.expander("🌱 Configure Local Soil Profile Settings", expanded=False):
+        # Explicit SoilGrids API fetch button to prevent automatic resets on map clicks
+        if st.button("📥 Download Soil Profile from ISRIC SoilGrids", key="download_soil_profile_btn", help="Fetch physical soil properties (Organic Matter, PAWC, Depth) from global ISRIC SoilGrids dataset for the current active coordinates."):
+            with st.spinner("Fetching global ISRIC SoilGrids grid profile characteristics..."):
+                try:
+                    isric_profile = fetch_isric_soil_data(st.session_state["latitude"], st.session_state["longitude"])
+                    if isric_profile:
+                        st.session_state["icrop2_som_key"] = isric_profile.get("som", 2.5)
+                        st.session_state["icrop2_pawc_key"] = isric_profile.get("pawc", 150.0)
+                        st.session_state["icrop2_depth_key"] = int(isric_profile.get("root_zone_depth", 1200))
+                        
+                        if isric_profile.get("is_fallback", False):
+                            st.toast("⚠️ ISRIC SoilGrids API down or timed out. Local fallback deployed.", icon="🌍")
+                        else:
+                            st.toast("✅ Soil profile successfully updated from ISRIC SoilGrids!", icon="🌍")
+                        st.rerun()
+                except Exception as fetch_err:
+                    st.error(f"Soil fetch error: {fetch_err}")
+                    
+        st.markdown("---")
+
         soil_depth = st.number_input(
             "Total Root Zone Depth (mm)", 
             min_value=100, 
             max_value=3000, 
+            value=int(st.session_state.get("icrop2_depth_key", 1200)),
             step=50,
             key="depth_key",
             help="Total vertical thickness of the active crop rooting profile."
@@ -1080,6 +1134,7 @@ with col_left:
             "Initial Soil Water Content (% Volumetric)", 
             min_value=0.0, 
             max_value=50.0, 
+            value=float(st.session_state.get("icrop2_initial_water_key", 25.0)),
             step=1.0,
             key="initial_water_key",
             help="Starting volumetric water content at the time of sowing."
@@ -1088,6 +1143,7 @@ with col_left:
             "Plant Available Water Capacity (PAWC) (mm/m)", 
             min_value=10.0, 
             max_value=300.0, 
+            value=float(st.session_state.get("icrop2_pawc_key", 150.0)),
             step=5.0,
             key="pawc_key",
             help="Maximum amount of water the soil profile can hold for plant extraction."
@@ -1096,10 +1152,17 @@ with col_left:
             "Soil Organic Matter (SOM) (%)", 
             min_value=0.1, 
             max_value=10.0, 
+            value=float(st.session_state.get("icrop2_som_key", 2.5)),
             step=0.1,
             key="som_key",
             help="Percentage of organic matter in topsoil."
         )
+        
+        # Keep keys synchronized when user manually updates the inputs
+        st.session_state["icrop2_depth_key"] = soil_depth
+        st.session_state["icrop2_initial_water_key"] = soil_initial_water
+        st.session_state["icrop2_pawc_key"] = soil_pawc
+        st.session_state["icrop2_som_key"] = soil_som
 
     # 2. CROP NUTRITION & FERTILIZER SCHEDULES (Dynamic Rows)
     with st.expander("🧪 Crop Nutrition & Fertilizer Management", expanded=False):
