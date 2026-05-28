@@ -138,15 +138,26 @@ class DatabaseManager:
         except Exception as e:
             logger.warning(f"Database auto-seeding bypassed: {e}")
 
-    def get_seeded_crops(self) -> List[Dict[str, Any]]:
+    def get_seeded_crops(self, current_user_id: Optional[int] = None) -> List[Dict[str, Any]]:
         """
-        Retrieves all seeded crop varieties from the crops table.
+        Retrieves all public and user-specific crop varieties from the crops table.
         """
         seeded = []
         with self.get_connection() as conn:
             cursor = conn.cursor()
             try:
-                cursor.execute("SELECT id, crop_name, cultivar, parameters_json FROM crops")
+                if current_user_id is not None:
+                    cursor.execute("""
+                        SELECT id, crop_name, cultivar, parameters_json, is_public, created_by_user_id 
+                        FROM crops 
+                        WHERE is_public = 1 OR created_by_user_id = ?
+                    """, (current_user_id,))
+                else:
+                    cursor.execute("""
+                        SELECT id, crop_name, cultivar, parameters_json, is_public, created_by_user_id 
+                        FROM crops 
+                        WHERE is_public = 1
+                    """)
                 for r in cursor.fetchall():
                     params = json.loads(r[3])
                     c_type = "Sorghum" if "bdEJUPNI" in params else "Maize"
@@ -155,7 +166,9 @@ class DatabaseManager:
                         "crop_name": r[1],
                         "cultivar": r[2],
                         "crop_type": c_type,
-                        "parameters": params
+                        "parameters": params,
+                        "is_public": r[4],
+                        "created_by_user_id": r[5]
                     })
             except Exception as e:
                 logger.warning(f"Failed to fetch seeded crops: {e}")
@@ -326,3 +339,150 @@ class DatabaseManager:
             """, (user_id, action, ip_address, timestamp))
             conn.commit()
             logger.warning(f"Security event logged: User {user_id} | Action: {action} | IP: {ip_address}")
+
+    def get_all_users(self) -> List[Dict[str, Any]]:
+        """
+        Retrieves all user accounts for the Admin panel user limits grid.
+        """
+        users = []
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT id, username, email, name, workplace, user_tier, run_limit, bio_name, bio_organization, bio_text 
+                FROM users
+            """)
+            for r in cursor.fetchall():
+                users.append({
+                    "id": r[0],
+                    "username": r[1],
+                    "email": r[2],
+                    "name": r[3],
+                    "workplace": r[4],
+                    "user_tier": r[5] or 'Researcher',
+                    "run_limit": r[6] if r[6] is not None else 50,
+                    "bio_name": r[7],
+                    "bio_organization": r[8],
+                    "bio_text": r[9]
+                })
+        return users
+
+    def update_user_run_limit(self, user_id: int, limit: int) -> bool:
+        """
+        Allows administrators to dynamically adjust storage run limits for a user.
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("UPDATE users SET run_limit = ? WHERE id = ?", (limit, user_id))
+            conn.commit()
+            return True
+
+    def update_user_biography(self, user_id: int, name: str, org: str, bio: str) -> bool:
+        """
+        Saves user's professional research biography details.
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE users 
+                SET bio_name = ?, bio_organization = ?, bio_text = ? 
+                WHERE id = ?
+            """, (name.strip(), org.strip(), bio.strip(), user_id))
+            conn.commit()
+            return True
+
+    def get_user_biography(self, user_id: int) -> Dict[str, Any]:
+        """
+        Fetches professional biography settings for a given user.
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT bio_name, bio_organization, bio_text, user_tier, run_limit FROM users WHERE id = ?", (user_id,))
+            r = cursor.fetchone()
+            if r:
+                return {
+                    "bio_name": r[0] or "",
+                    "bio_organization": r[1] or "",
+                    "bio_text": r[2] or "",
+                    "user_tier": r[3] or "Researcher",
+                    "run_limit": r[4] if r[4] is not None else 50
+                }
+            return {"bio_name": "", "bio_organization": "", "bio_text": "", "user_tier": "Researcher", "run_limit": 50}
+
+    def get_simulation_runs(self, user_id: int) -> List[Dict[str, Any]]:
+        """
+        Retrieves all saved simulation runs for the active user.
+        """
+        runs = []
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT id, run_name, timestamp, crop_id, summary_metrics, raw_data_blob 
+                FROM simulation_runs 
+                WHERE user_id = ?
+                ORDER BY timestamp DESC
+            """, (user_id,))
+            for r in cursor.fetchall():
+                runs.append({
+                    "id": r[0],
+                    "run_name": r[1],
+                    "timestamp": r[2],
+                    "crop_id": r[3],
+                    "summary_metrics": json.loads(r[4]) if r[4] else {},
+                    "raw_data": json.loads(r[5]) if r[5] else []
+                })
+        return runs
+
+    def save_simulation_run(self, user_id: int, run_name: str, crop_id: Optional[int], summary_metrics: Dict[str, Any], raw_data: List[Dict[str, Any]]) -> Tuple[bool, str]:
+        """
+        Verifies active storage limits and saves a simulation run to simulation_runs table.
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            # Fetch user limit and current count
+            cursor.execute("SELECT run_limit FROM users WHERE id = ?", (user_id,))
+            lim_row = cursor.fetchone()
+            limit = lim_row[0] if (lim_row and lim_row[0] is not None) else 50
+            
+            cursor.execute("SELECT COUNT(*) FROM simulation_runs WHERE user_id = ?", (user_id,))
+            count = cursor.fetchone()[0]
+            
+            if count >= limit:
+                return False, f"Storage Limit Reached ({count}/{limit} runs). Please delete older runs to save new simulations."
+                
+            cursor.execute("""
+                INSERT INTO simulation_runs (user_id, run_name, crop_id, summary_metrics, raw_data_blob)
+                VALUES (?, ?, ?, ?, ?)
+            """, (user_id, run_name.strip(), crop_id, json.dumps(summary_metrics), json.dumps(raw_data)))
+            conn.commit()
+            return True, "Simulation successfully saved to your research workspace sandbox!"
+
+    def delete_simulation_run(self, run_id: int, user_id: int) -> bool:
+        """
+        Deletes a simulation run from the research history.
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM simulation_runs WHERE id = ? AND user_id = ?", (run_id, user_id))
+            conn.commit()
+            return True
+
+    def delete_master_crop(self, crop_id: int) -> bool:
+        """
+        Administrative CRUD operation to delete a master crop variety.
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM crops WHERE id = ?", (crop_id,))
+            conn.commit()
+            return True
+
+    def update_crop_sharing(self, crop_id: int, is_public: int) -> bool:
+        """
+        Allows public sharing or private sandbox visibility for a crop variety.
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("UPDATE crops SET is_public = ? WHERE id = ?", (is_public, crop_id))
+            conn.commit()
+            return True

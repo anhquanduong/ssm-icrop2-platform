@@ -64,9 +64,40 @@ def migrate_database_schema(conn: sqlite3.Connection):
             login_attempts INTEGER DEFAULT 0,
             lockout_until TEXT NULL,
             last_verification_sent TEXT NULL,
-            session_token TEXT
+            session_token TEXT,
+            user_tier TEXT DEFAULT 'Researcher',
+            run_limit INTEGER DEFAULT 50,
+            bio_name TEXT,
+            bio_organization TEXT,
+            bio_text TEXT
         )
     """)
+    
+    # Run dynamic schema migrations on users to append any missing columns
+    cursor.execute("PRAGMA table_info(users)")
+    users_cols = {col[1] for col in cursor.fetchall()}
+    
+    users_migrations = [
+        ("user_tier", "TEXT DEFAULT 'Researcher'"),
+        ("run_limit", "INTEGER DEFAULT 50"),
+        ("bio_name", "TEXT"),
+        ("bio_organization", "TEXT"),
+        ("bio_text", "TEXT")
+    ]
+    for col_name, col_type in users_migrations:
+        if col_name not in users_cols:
+            try:
+                cursor.execute(f"ALTER TABLE users ADD COLUMN {col_name} {col_type}")
+                logger.info(f"Database Migration: Added column '{col_name}' ({col_type}) to 'users' table.")
+            except Exception as e:
+                logger.error(f"Migration failed adding {col_name} to users: {e}")
+                
+    # Promote duonganhquan@humg.edu.vn to Admin automatically
+    try:
+        cursor.execute("UPDATE users SET user_tier = 'Admin' WHERE email = 'duonganhquan@humg.edu.vn'")
+        conn.commit()
+    except Exception as e:
+        logger.warning(f"Admin promotion check bypassed: {e}")
     
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS simulation_history (
@@ -78,7 +109,21 @@ def migrate_database_schema(conn: sqlite3.Connection):
             FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
         )
     """)
-    logger.info("Database Schema: Verified users and simulation_history tables with IF NOT EXISTS.")
+    
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS simulation_runs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            run_name TEXT NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            crop_id INTEGER,
+            summary_metrics TEXT,
+            raw_data_blob BLOB,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY(crop_id) REFERENCES crops(id) ON DELETE SET NULL
+        )
+    """)
+    logger.info("Database Schema: Verified users, simulation_history, and simulation_runs tables.")
     
     # 1. Structural check on crop_profiles
     cursor.execute("PRAGMA table_info(crop_profiles)")
@@ -137,7 +182,7 @@ def migrate_database_schema(conn: sqlite3.Connection):
     except Exception as e:
         logger.error(f"Migration failed applying defaults to crop_profiles: {e}")
 
-    # 2. Structural check on optional crops table (for strict prompt compliance)
+    # 2. Structural check on crops table
     try:
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='crops'")
         if cursor.fetchone():
@@ -151,6 +196,10 @@ def migrate_database_schema(conn: sqlite3.Connection):
                 cursor.execute("ALTER TABLE crops ADD COLUMN t_dormancy_trigger REAL")
             if "t_base_winter" not in crops_cols:
                 cursor.execute("ALTER TABLE crops ADD COLUMN t_base_winter REAL")
+            if "is_public" not in crops_cols:
+                cursor.execute("ALTER TABLE crops ADD COLUMN is_public INTEGER DEFAULT 1")
+            if "created_by_user_id" not in crops_cols:
+                cursor.execute("ALTER TABLE crops ADD COLUMN created_by_user_id INTEGER")
                 
             cursor.execute("""
                 UPDATE crops 
@@ -172,5 +221,10 @@ def migrate_database_schema(conn: sqlite3.Connection):
                 SET t_base_winter = 0.0 
                 WHERE t_base_winter IS NULL
             """)
+            cursor.execute("""
+                UPDATE crops 
+                SET is_public = 1 
+                WHERE is_public IS NULL
+            """)
     except Exception as e:
-        logger.warning(f"Optional crops table check skipped: {e}")
+        logger.warning(f"Crops table check/migration skipped: {e}")

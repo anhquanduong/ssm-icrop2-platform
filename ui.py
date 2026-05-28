@@ -62,7 +62,7 @@ from utils.auth_secure import (
     resend_verification_email,
     verify_session_token,
     LOCAL_MAILBOX_SIMULATOR
-)
+from utils.calibrator import run_calibration_search
 
 # Additional utilities
 def is_smtp_configured() -> bool:
@@ -246,6 +246,10 @@ if "icrop2_workplace" not in st.session_state:
     st.session_state.icrop2_workplace = None
 if "icrop2_is_verified" not in st.session_state:
     st.session_state.icrop2_is_verified = 0
+if "icrop2_user_tier" not in st.session_state:
+    st.session_state.icrop2_user_tier = "Researcher"
+if "icrop2_run_limit" not in st.session_state:
+    st.session_state.icrop2_run_limit = 50
 if "icrop2_session_token" not in st.session_state:
     st.session_state.icrop2_session_token = None
 if "icrop2_session_key" not in st.session_state:
@@ -309,6 +313,8 @@ if "session_token" in query_params:
         st.session_state.icrop2_is_verified = s_payload["is_verified"]
         st.session_state.icrop2_session_token = s_payload["session_token"]
         st.session_state.icrop2_session_key = s_payload["session_key"]
+        st.session_state.icrop2_user_tier = s_payload.get("user_tier", "Researcher")
+        st.session_state.icrop2_run_limit = s_payload.get("run_limit", 50)
     st.query_params.clear()
 
 # Check cookies for persistent sessions if not currently authenticated
@@ -327,6 +333,8 @@ if not st.session_state.icrop2_logged_in:
             st.session_state.icrop2_is_verified = s_payload["is_verified"]
             st.session_state.icrop2_session_token = s_payload["session_token"]
             st.session_state.icrop2_session_key = s_payload["session_key"]
+            st.session_state.icrop2_user_tier = s_payload.get("user_tier", "Researcher")
+            st.session_state.icrop2_run_limit = s_payload.get("run_limit", 50)
             st.rerun()
 
 if "verify_token" in query_params:
@@ -388,6 +396,8 @@ if not st.session_state.icrop2_logged_in:
                 st.session_state.icrop2_is_verified = payload["is_verified"]
                 st.session_state.icrop2_session_token = payload["session_token"]
                 st.session_state.icrop2_session_key = payload.get("session_key")
+                st.session_state.icrop2_user_tier = payload.get("user_tier", "Researcher")
+                st.session_state.icrop2_run_limit = payload.get("run_limit", 50)
                 
                 controller.set("icrop2_session_token", payload["session_token"])
                 st.success("Access Granted! Loading C4 simulation core...")
@@ -501,6 +511,8 @@ if st.sidebar.button("🚪 Log Out", width='stretch'):
     st.session_state.icrop2_is_verified = 0
     st.session_state.icrop2_session_token = None
     st.session_state.icrop2_session_key = None
+    st.session_state.icrop2_user_tier = "Researcher"
+    st.session_state.icrop2_run_limit = 50
     
     controller.remove("icrop2_session_token")
     import time
@@ -540,11 +552,18 @@ with st.sidebar:
         "label": "Default: Sorghum (BOKU)"
     }
     
-    # - Seeded preset profiles from crops table
+    # - Seeded preset and custom profiles from crops table
     try:
-        seeded_crops = db.get_seeded_crops()
+        seeded_crops = db.get_seeded_crops(st.session_state.icrop2_user_id)
         for sc in seeded_crops:
-            lbl = f"📦 Preset: {sc['crop_name']} ({sc['cultivar']})"
+            if sc.get("created_by_user_id") is not None:
+                if sc.get("is_public") == 1:
+                    lbl = f"🌐 Public Custom: {sc['crop_name']} ({sc['cultivar']})"
+                else:
+                    lbl = f"🔒 Private Custom: {sc['crop_name']} ({sc['cultivar']})"
+            else:
+                lbl = f"📦 Preset: {sc['crop_name']} ({sc['cultivar']})"
+                
             profile_options.append(lbl)
             profile_map[lbl] = {
                 "crop_type": sc["crop_type"],
@@ -709,7 +728,7 @@ with st.sidebar:
                 help="The absolute temperature floor below which biological development stalls entirely for this crop."
             )
             
-            new_privacy = st.radio("Privacy Status", ["🔒 Private (Me Only)", "🌐 Public (Share with all users)"])
+            publish_community = st.checkbox("🌐 Publish this calibrated crop variety to the community library", value=False)
             
             submit_btn = st.form_submit_button("Save and Register Crop Profile")
             
@@ -739,23 +758,26 @@ with st.sidebar:
                         new_params["t_dormancy_trigger"] = t_dormancy_trigger
                         new_params["t_base_winter"] = t_base_winter
                         
-                        is_public_flag = 1 if "Public" in new_privacy else 0
+                        is_public_flag = 1 if publish_community else 0
+                        created_by_user = st.session_state.icrop2_user_id
                         
                         try:
-                            db.save_crop_profile(
-                                user_id=st.session_state.icrop2_user_id,
-                                crop_name=new_crop_name.strip(),
-                                is_public=is_public_flag,
-                                param_dict=new_params,
-                                session_key=st.session_state.get("icrop2_session_key")
-                            )
+                            # Save directly to 'crops' table
+                            with db.get_connection() as conn:
+                                cursor = conn.cursor()
+                                cursor.execute("""
+                                    INSERT OR REPLACE INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter, is_public, created_by_user_id)
+                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                """, (new_crop_name.strip(), "Custom", json.dumps(new_params), crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter, is_public_flag, created_by_user))
+                                conn.commit()
+                                
                             st.toast("✅ New Crop Profile Registered Successfully!")
                             
                             # Update selected focus dynamically
                             if is_public_flag:
-                                newly_created_label = f"🌐 Public: {new_crop_name.strip()} (Shared by {st.session_state.icrop2_username})"
+                                newly_created_label = f"🌐 Public Custom: {new_crop_name.strip()} (Custom)"
                             else:
-                                newly_created_label = f"🔒 Private: {new_crop_name.strip()} (My Profile)"
+                                newly_created_label = f"🔒 Private Custom: {new_crop_name.strip()} (Custom)"
                             st.session_state["icrop2_selected_crop_profile"] = newly_created_label
                             st.rerun()
                         except Exception as save_err:
@@ -833,25 +855,29 @@ with st.sidebar:
         st.subheader("💾 Save Profile to Cloud")
         with st.expander("Save Current Profile", expanded=False):
             new_profile_name = st.text_input("Profile Name", placeholder="e.g. Maize-Hybrid-Iowa")
-            privacy_setting = st.radio(
-                "Privacy Setting:",
-                ["🔒 Private - Keep only for me", "🌐 Public - Share with community"]
-            )
-            is_public_flag = 1 if "Public" in privacy_setting else 0
+            publish_community_tweak = st.checkbox("🌐 Publish this calibrated crop variety to the community library", value=False, key="tweak_publish_cb")
+            is_public_flag = 1 if publish_community_tweak else 0
+            created_by_user = st.session_state.icrop2_user_id
             
             if st.button("Save Profile"):
                 if not new_profile_name.strip():
                     st.error("Please enter a valid profile name.")
                 else:
                     try:
-                        db.save_crop_profile(
-                            user_id=st.session_state.icrop2_user_id,
-                            crop_name=new_profile_name,
-                            is_public=is_public_flag,
-                            param_dict=active_profile,
-                            session_key=st.session_state.get("icrop2_session_key")
-                        )
+                        # Save directly to 'crops' table
+                        with db.get_connection() as conn:
+                            cursor = conn.cursor()
+                            cursor.execute("""
+                                INSERT OR REPLACE INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter, is_public, created_by_user_id)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            """, (new_profile_name.strip(), "Custom", json.dumps(active_profile), active_profile.get("crop_produce_type", "Fruit/Seed"), active_profile.get("lifecycle_strategy", "Annual (Single-Season)"), active_profile.get("t_dormancy_trigger", 5.0), active_profile.get("t_base_winter", 0.0), is_public_flag, created_by_user))
+                            conn.commit()
+                        
                         st.success(f"Successfully saved profile '{new_profile_name}'!")
+                        if is_public_flag:
+                            st.session_state["icrop2_selected_crop_profile"] = f"🌐 Public Custom: {new_profile_name.strip()} (Custom)"
+                        else:
+                            st.session_state["icrop2_selected_crop_profile"] = f"🔒 Private Custom: {new_profile_name.strip()} (Custom)"
                         st.rerun()
                     except Exception as save_err:
                         st.error(f"Failed to save profile: {save_err}")
@@ -1467,8 +1493,16 @@ with col_left:
             value=f"Run #{len(st.session_state.get('icrop2_sim_history', {})) + 1}",
             help="Enter a unique tag name to save this simulation run in history."
         )
-    with c_btn:
-        run_btn = st.button("🚀 Run SSM-iCrop Simulation", width='stretch')
+    # Check active storage limits
+    current_saved_runs = len(db.get_simulation_runs(st.session_state.icrop2_user_id))
+    limit_reached = current_saved_runs >= st.session_state.icrop2_run_limit
+    
+    if limit_reached:
+        st.error(f"⚠️ **Storage Limit Reached ({current_saved_runs}/{st.session_state.icrop2_run_limit} runs):** You must delete old simulations in **My Research Workspace** before executing new runs.")
+        run_btn = False
+    else:
+        with c_btn:
+            run_btn = st.button("🚀 Run SSM-iCrop Simulation", width='stretch')
 
 # ----------------- RIGHT COLUMN: CHARTS & METRICS VIEWPORT -----------------
 with col_right:
@@ -1485,7 +1519,17 @@ with col_right:
         """, 
         unsafe_allow_html=True
     )
-    tab_sim, tab_comp, tab_acc = st.tabs(["📊 Simulation Dashboard", "🔄 Scenario Comparison", "👤 My Account"])
+    nav_tabs = ["📊 Simulation Dashboard", "🔄 Scenario Comparison", "👤 My Research Workspace", "🔬 Calibration Wizard"]
+    if st.session_state.get("icrop2_user_tier") == "Admin":
+        nav_tabs.append("🛡️ Admin Control Panel")
+        
+    tabs = st.tabs(nav_tabs)
+    tab_sim = tabs[0]
+    tab_comp = tabs[1]
+    tab_workspace = tabs[2]
+    tab_calibration = tabs[3]
+    if st.session_state.get("icrop2_user_tier") == "Admin":
+        tab_admin = tabs[4]
     
     with tab_sim:
         metrics_placeholder = st.empty()
@@ -1792,6 +1836,60 @@ with col_right:
                     m2.markdown(f'<div class="metric-card"><div class="metric-label">Biomass (t/ha)</div><div class="metric-value">{final_biomass_val:.2f}</div></div>', unsafe_allow_html=True)
                     m3.markdown(f'<div class="metric-card"><div class="metric-label">Grain Yield (t/ha)</div><div class="metric-value">{final_yield_val:.2f}</div></div>', unsafe_allow_html=True)
                 
+                # Save simulation run sandbox box
+                with st.expander("💾 Save Simulation Run to My Research Workspace Sandbox", expanded=False):
+                    col_save_txt, col_save_btn = st.columns([2, 1])
+                    run_save_name = col_save_txt.text_input("Persistent Save Name", value=scenario_name, key="workspace_save_run_name")
+                    if col_save_btn.button("💾 Save Run", key="workspace_save_run_btn"):
+                        # Prepare data
+                        raw_dicts = results_df.to_dict(orient="records")
+                        cleaned_raw = []
+                        for row in raw_dicts:
+                            cleaned_row = {}
+                            for k, v in row.items():
+                                if isinstance(v, (pd.DataFrame, pd.Series, dict, list)):
+                                    continue
+                                if pd.isna(v):
+                                    cleaned_row[k] = None
+                                elif isinstance(v, (datetime.date, datetime.datetime)):
+                                    cleaned_row[k] = v.isoformat()
+                                else:
+                                    cleaned_row[k] = v
+                            cleaned_raw.append(cleaned_row)
+                            
+                        summary_metrics = {
+                            "max_lai": float(max_lai_val),
+                            "biomass_tha": float(final_biomass_val),
+                            "yield_tha": float(final_yield_val)
+                        }
+                        
+                        # Determine Crop ID
+                        crop_id = None
+                        if selected_option.startswith("🔒 Private Custom:") or selected_option.startswith("🌐 Public Custom:") or selected_option.startswith("📦 Preset:"):
+                            for sc in seeded_crops:
+                                if sc.get("created_by_user_id") is not None:
+                                    if sc.get("is_public") == 1:
+                                        opt_lbl = f"🌐 Public Custom: {sc['crop_name']} ({sc['cultivar']})"
+                                    else:
+                                        opt_lbl = f"🔒 Private Custom: {sc['crop_name']} ({sc['cultivar']})"
+                                else:
+                                    opt_lbl = f"📦 Preset: {sc['crop_name']} ({sc['cultivar']})"
+                                if opt_lbl == selected_option:
+                                    crop_id = sc["id"]
+                                    break
+                                    
+                        success_s, msg_s = db.save_simulation_run(
+                            st.session_state.icrop2_user_id,
+                            run_save_name,
+                            crop_id,
+                            summary_metrics,
+                            cleaned_raw
+                        )
+                        if success_s:
+                            st.success(f"🎉 {msg_s}")
+                        else:
+                            st.error(f"❌ {msg_s}")
+                            
                 # 6. Plot Interactive Biomass line chart via Plotly Express
                 with chart1_placeholder.container():
                     st.markdown("##### 🌱 Daily Dry Biomass and Grain Weight Accumulation")
@@ -2124,53 +2222,535 @@ with col_right:
                 st.toast("🧹 Simulation history cleared successfully!")
                 st.rerun()
 
-    with tab_acc:
-        st.subheader("👤 Profile Parameters Management")
+    with tab_workspace:
+        st.subheader("👤 My Research Workspace & Sandbox")
         
-        with st.form("update_profile_form"):
-            st.write("Edit your personal account details below:")
-            prof_name = st.text_input("Full Name", value=st.session_state.icrop2_name)
-            prof_work = st.text_input("Workplace / Institution", value=st.session_state.icrop2_workplace)
+        # 1. Professional Biography Panel
+        st.markdown("### 📋 Professional Research Biography")
+        bio_data = db.get_user_biography(st.session_state.icrop2_user_id)
+        
+        with st.form("update_biography_form"):
+            bio_name = st.text_input("Professional Name", value=bio_data.get("bio_name") or st.session_state.icrop2_name or "")
+            bio_org = st.text_input("Affiliated Institution / Organization", value=bio_data.get("bio_organization") or st.session_state.icrop2_workplace or "")
+            bio_text = st.text_area("Research Summary & Focus", value=bio_data.get("bio_text") or "")
             
-            if st.form_submit_button("Update Profile Details"):
-                success, msg = update_user_profile(st.session_state.icrop2_user_id, prof_name, prof_work)
-                if success:
-                    st.session_state.icrop2_name = prof_name
-                    st.session_state.icrop2_workplace = prof_work
-                    st.success(msg)
+            if st.form_submit_button("Update Biography Details"):
+                if db.update_user_biography(st.session_state.icrop2_user_id, bio_name, bio_org, bio_text):
+                    # Also sync profile detail updates
+                    update_user_profile(st.session_state.icrop2_user_id, bio_name, bio_org)
+                    st.session_state.icrop2_name = bio_name
+                    st.session_state.icrop2_workplace = bio_org
+                    st.success("✅ Biography and profile details updated successfully!")
                     st.rerun()
                 else:
-                    st.error(msg)
+                    st.error("Failed to update biography details.")
                     
-        st.subheader("🔐 Request Password Change")
-        with st.form("change_password_form"):
-            st.write("To change your account password, type your credentials to request a secure link:")
-            curr_pass = st.text_input("Current Password", type="password", key="chg_pwd_current")
-            new_pass = st.text_input("New Password (Min 6 chars)", type="password", key="chg_pwd_new")
-            confirm_pass = st.text_input("Confirm New Password", type="password", key="chg_pwd_confirm")
-            
-            if st.form_submit_button("Request Password Change Token"):
-                if new_pass != confirm_pass:
-                    st.error("Passwords do not match!")
-                elif len(new_pass) < 6:
-                    st.error("Password must be at least 6 characters.")
-                else:
-                    # Validate current password
-                    success, msg, payload = authenticate_secure_user(st.session_state.icrop2_username, curr_pass)
-                    if success:
-                        # Password correct, dispatch reset/verification email link
-                        req_success, req_msg = request_password_reset(st.session_state.icrop2_email)
-                        st.info("A secure password reset link has been dispatched to your email address. Verify the email link to apply changes.")
-                    else:
-                        st.error("Current password verification failed. Please try again.")
+        # 2. Storage Quota Status Card
+        st.markdown("### 📊 Account Quota Status")
+        current_saved_runs = len(db.get_simulation_runs(st.session_state.icrop2_user_id))
+        limit_color = "#10B981" if current_saved_runs < st.session_state.icrop2_run_limit else "#EF4444"
+        
+        st.markdown(f"""
+        <div style="padding: 1rem; background-color: #F9FAFB; border-radius: 8px; border: 1px solid #E5E7EB; margin-bottom: 1.5rem;">
+            <p style="margin: 0;"><strong>User Tier:</strong> <span style="color: #3B82F6;">{st.session_state.icrop2_user_tier}</span></p>
+            <p style="margin: 0;"><strong>Simulation Storage Cap:</strong> <span style="color: {limit_color}; font-weight: bold;">{current_saved_runs} / {st.session_state.icrop2_run_limit} runs</span></p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # 3. Saved Simulations Ledger
+        st.markdown("### 💾 Saved Simulations Ledger")
+        saved_runs = db.get_simulation_runs(st.session_state.icrop2_user_id)
+        if not saved_runs:
+            st.info("ℹ️ No saved simulations found in your workspace sandbox. Run a simulation and save it to persist results here.")
+        else:
+            for idx, run in enumerate(saved_runs):
+                with st.expander(f"📁 {run['run_name']} (Saved: {run['timestamp']})", expanded=False):
+                    m_c1, m_c2, m_c3 = st.columns(3)
+                    m_c1.metric("Max LAI", f"{run['summary_metrics'].get('max_lai', 0.0):.2f}")
+                    m_c2.metric("Biomass (t/ha)", f"{run['summary_metrics'].get('biomass_tha', 0.0):.2f}")
+                    m_c3.metric("Grain Yield (t/ha)", f"{run['summary_metrics'].get('yield_tha', 0.0):.2f}")
+                    
+                    st.markdown("##### 📥 Export / Download Data")
+                    try:
+                        run_df = pd.DataFrame(run["raw_data"])
+                        col_exp_csv, col_exp_xlsx, col_exp_del = st.columns(3)
                         
-        # Local debug reset link display for password changes
-        my_emails_reset = [m for m in LOCAL_MAILBOX_SIMULATOR if m["to"] == st.session_state.icrop2_email and "Reset" in m["subject"]]
-        if my_emails_reset and not is_smtp_configured():
-            with st.expander("📬 Local Mailbox Simulator (Debug Password Reset)", expanded=True):
+                        # Generate CSV
+                        csv_data_run = run_df.to_csv(index=False).encode('utf-8')
+                        col_exp_csv.download_button(
+                            label="Download CSV",
+                            data=csv_data_run,
+                            file_name=f"{run['run_name'].replace(' ', '_')}_simulation.csv",
+                            mime="text/csv",
+                            key=f"csv_run_dl_{run['id']}"
+                        )
+                        
+                        # Generate Excel
+                        import io
+                        output = io.BytesIO()
+                        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                            run_df.to_excel(writer, sheet_name="Timeline", index=False)
+                        xlsx_data_run = output.getvalue()
+                        
+                        col_exp_xlsx.download_button(
+                            label="Download Formatted Excel",
+                            data=xlsx_data_run,
+                            file_name=f"{run['run_name'].replace(' ', '_')}_simulation.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            key=f"xlsx_run_dl_{run['id']}"
+                        )
+                    except Exception as e_run:
+                        st.error(f"Failed to generate download archives: {e_run}")
+                        
+                    # Delete saved run
+                    if col_exp_del.button("🗑️ Delete Simulation Run", key=f"del_run_btn_{run['id']}"):
+                        db.delete_simulation_run(run["id"], st.session_state.icrop2_user_id)
+                        st.toast(f"🧹 Deleted simulation run '{run['run_name']}'!")
+                        st.rerun()
+
+        # 4. Standard Profile and Password management (under expanders)
+        with st.expander("🔐 Security & Credentials Settings", expanded=False):
+            st.subheader("Profile Account Details")
+            with st.form("update_profile_form_workspace"):
+                prof_name = st.text_input("Full Name", value=st.session_state.icrop2_name)
+                prof_work = st.text_input("Workplace / Institution", value=st.session_state.icrop2_workplace)
+                
+                if st.form_submit_button("Update Account Details"):
+                    success, msg = update_user_profile(st.session_state.icrop2_user_id, prof_name, prof_work)
+                    if success:
+                        st.session_state.icrop2_name = prof_name
+                        st.session_state.icrop2_workplace = prof_work
+                        st.success(msg)
+                        st.rerun()
+                    else:
+                        st.error(msg)
+            
+            st.subheader("Change Password")
+            with st.form("change_password_form_workspace"):
+                st.write("To change your account password, type your credentials to request a secure link:")
+                curr_pass = st.text_input("Current Password", type="password", key="chg_pwd_current_ws")
+                new_pass = st.text_input("New Password (Min 6 chars)", type="password", key="chg_pwd_new_ws")
+                confirm_pass = st.text_input("Confirm New Password", type="password", key="chg_pwd_confirm_ws")
+                
+                if st.form_submit_button("Request Password Change Token"):
+                    if new_pass != confirm_pass:
+                        st.error("Passwords do not match!")
+                    elif len(new_pass) < 6:
+                        st.error("Password must be at least 6 characters.")
+                    else:
+                        # Validate current password
+                        success, msg, payload = authenticate_secure_user(st.session_state.icrop2_username, curr_pass)
+                        if success:
+                            # Password correct, dispatch reset/verification email link
+                            req_success, req_msg = request_password_reset(st.session_state.icrop2_email)
+                            st.info("A secure password reset link has been dispatched to your email address. Verify the email link to apply changes.")
+                        else:
+                            st.error("Current password verification failed. Please try again.")
+                            
+            # Local debug reset link display for password changes
+            my_emails_reset = [m for m in LOCAL_MAILBOX_SIMULATOR if m["to"] == st.session_state.icrop2_email and "Reset" in m["subject"]]
+            if my_emails_reset and not is_smtp_configured():
                 st.info("Confirmation email links found in local memory cache:")
                 for m in my_emails_reset:
                     st.write(f"**To:** {m['to']} | **Subject:** {m['subject']}")
                     lnks = re.findall(r'href="(.*?)"', m["body_html"])
                     if lnks:
                         st.markdown(f"[🔗 Complete Password Reset]({lnks[0]})")
+
+    with tab_calibration:
+        st.subheader("🔬 Crop Parameter Calibration Wizard")
+        st.markdown(
+            "Welcome to the high-flexibility SSM-iCrop calibration wizard. "
+            "You can enter historical harvest observations (Yield & LAI) and select crop physiological coefficients "
+            "for the optimization search engine to fine-tune to your local region."
+        )
+        
+        # 1. Weather Data Source Selection
+        st.markdown("### ☁️ Step 1: Bind Weather Data Source")
+        cal_weather_src = st.radio(
+            "Select Weather Dataset for Calibration:",
+            ["📂 Use Current Uploaded Weather File", "🌐 Auto-Fetch Satellite Weather for Coordinates"],
+            key="cal_weather_src_select"
+        )
+        
+        effective_cal_weather_df = None
+        if "📂 Use Current Uploaded Weather" in cal_weather_src:
+            if 'weather_df' in locals() and weather_df is not None:
+                effective_cal_weather_df = weather_df.copy()
+            elif st.session_state.get("icrop2_last_results_df") is not None:
+                res_df = st.session_state.icrop2_last_results_df
+                if "YEAR" in res_df.columns and "DOY" in res_df.columns:
+                    cols_needed = ["YEAR", "DOY", "SRAD", "TMAX", "TMIN", "RAIN", "TMP", "VP"]
+                    effective_cal_weather_df = pd.DataFrame()
+                    for c in cols_needed:
+                        if c in res_df.columns:
+                            effective_cal_weather_df[c] = res_df[c]
+                        elif c == "TMP" and "TMAX" in res_df.columns:
+                            effective_cal_weather_df["TMP"] = (res_df["TMAX"] + res_df["TMIN"]) / 2.0
+                        elif c == "VP" and "VPD" in res_df.columns:
+                            effective_cal_weather_df["VP"] = 1.0
+            
+            if effective_cal_weather_df is None:
+                st.warning("⚠️ No custom weather file uploaded yet. Please upload a weather file in the sidebar first, or choose '🌐 Auto-Fetch' to download satellite records.")
+        else:
+            st.info(f"📍 Will auto-fetch satellite weather at coordinate center: Lat = {st.session_state.latitude:.4f}, Lon = {st.session_state.longitude:.4f}")
+            
+        # 2. Soil Data Source Selection
+        st.markdown("### ⛰️ Step 2: Bind Soil Data Source")
+        cal_soil_src = st.radio(
+            "Select Soil Profile Dataset for Calibration:",
+            ["🌐 Use Active ISRIC Grid API Profile", "⛰️ Use BOKU Regional Dataset", "✍️ Use My Manually Typed Soil Layer Values"],
+            key="cal_soil_src_select"
+        )
+        
+        effective_cal_soil_params = None
+        effective_cal_soil_profile = None
+        
+        if "ISRIC Grid API Profile" in cal_soil_src:
+            if 'soil_profile' in locals() and soil_profile is not None:
+                effective_cal_soil_profile = soil_profile
+                effective_cal_soil_params = map_soil_profile_to_params(soil_profile)
+            else:
+                try:
+                    from utils.soil_handler import fetch_isric_soil_data_with_failover
+                    effective_cal_soil_profile = fetch_isric_soil_data_with_failover(st.session_state.latitude, st.session_state.longitude)
+                    effective_cal_soil_params = map_soil_profile_to_params(effective_cal_soil_profile)
+                except Exception as isric_e:
+                    st.warning(f"ISRIC API failed ({isric_e}). Reverting to regional default.")
+                    from utils.soil_handler import load_boku_fallback_soil
+                    effective_cal_soil_profile = load_boku_fallback_soil(st.session_state.latitude, st.session_state.longitude)
+                    effective_cal_soil_params = map_soil_profile_to_params(effective_cal_soil_profile)
+        elif "BOKU Regional Dataset" in cal_soil_src:
+            from utils.soil_handler import load_boku_fallback_soil
+            effective_cal_soil_profile = load_boku_fallback_soil(st.session_state.latitude, st.session_state.longitude)
+            effective_cal_soil_params = map_soil_profile_to_params(effective_cal_soil_profile)
+        else:
+            dlyers = [float(st.session_state.get(f"override_dlyer_{i}", 150.0)) for i in range(5)]
+            duls = [float(st.session_state.get(f"override_dul_{i}", 0.28)) for i in range(5)]
+            pwps = [float(st.session_state.get(f"override_pwp_{i}", 0.12)) for i in range(5)]
+            
+            sat = [round(min(0.50, d + 0.05), 3) for d in duls]
+            extr = [round(max(0.05, d - p), 3) for d, p in zip(duls, pwps)]
+            
+            effective_cal_soil_params = {
+                "NLYER": 5,
+                "LDRAIN": 4,
+                "SALB": 0.13,
+                "U": 6.0,
+                "CN": 75.0,
+                "DLYER": dlyers,
+                "SAT": sat,
+                "DUL": duls,
+                "EXTR": extr,
+                "DRAINF": [0.4, 0.4, 0.4, 0.4, 0.4],
+                "MAI": [1.0, 1.0, 1.0, 1.0, 1.0]
+            }
+            effective_cal_soil_profile = {
+                "Max_Root_Depth": int(sum(dlyers)),
+                "Soil_Water_Capacity": round(sum(d * e for d, e in zip(dlyers, extr)), 1),
+                "clay_fraction": 0.25,
+                "sand_fraction": 0.35,
+                "organic_matter": float(st.session_state.get("icrop2_som_key", 2.5)) / 100.0,
+                "bulk_density": 1.35,
+                "source": "Manual Soil Core Measurements"
+            }
+            
+        if effective_cal_soil_profile is not None:
+            st.success(f"✅ Bound Soil Profile Capacity: {effective_cal_soil_profile.get('Soil_Water_Capacity')} mm ({effective_cal_soil_profile.get('source', 'Resolved')})")
+            
+        # 3. Observed Data Ledger
+        st.markdown("### 🌾 Step 3: Enter Historical Observed Records")
+        if "icrop2_calibration_observed" not in st.session_state:
+            st.session_state.icrop2_calibration_observed = [
+                {"Year": 2020, "Observed Yield (t/ha)": 7.8, "Observed Peak LAI (Optional)": 4.2}
+            ]
+            
+        edited_obs = st.data_editor(
+            st.session_state.icrop2_calibration_observed,
+            num_rows="dynamic",
+            key="cal_obs_editor_grid",
+            column_config={
+                "Year": st.column_config.NumberColumn("Year", min_value=1940, max_value=2026, format="%d"),
+                "Observed Yield (t/ha)": st.column_config.NumberColumn("Observed Yield (t/ha)", min_value=0.1, max_value=40.0, step=0.1),
+                "Observed Peak LAI (Optional)": st.column_config.NumberColumn("Observed Peak LAI (Optional)", min_value=0.0, max_value=15.0, step=0.1)
+            }
+        )
+        st.session_state.icrop2_calibration_observed = edited_obs
+        
+        # 4. Parameter Selection Checkboxes
+        st.markdown("### ⚙️ Step 4: Select crop variables to estimate")
+        col_sel1, col_sel2 = st.columns(2)
+        c_rue = col_sel1.checkbox("Radiation Use Efficiency (RUE_MAX) [Bounds: 1.0 to 5.0 g/MJ]", value=True)
+        c_sla = col_sel1.checkbox("Specific Leaf Area (SLA) [Bounds: 0.005 to 0.05 m²/g]", value=False)
+        c_tbd = col_sel1.checkbox("Base Temperature (TBD) [Bounds: 0.0 to 15.0 °C]", value=False)
+        c_phyl = col_sel2.checkbox("Phyllochron (PHYL) [Bounds: 20.0 to 100.0 °C/leaf]", value=False)
+        c_sow = col_sel2.checkbox("Sowing-Emergence Days (bdSOWEMR) [Bounds: 1.0 to 10.0]", value=False)
+        c_eju = col_sel2.checkbox("Emergence-Juvenile Days (bdEMREJU) [Bounds: 5.0 to 25.0]", value=False)
+        c_sil = col_sel2.checkbox("Silking-Maturity Days (bdSILPM) [Bounds: 10.0 to 60.0]", value=False)
+        
+        cal_bounds = {}
+        if c_rue:
+            cal_bounds["RUE_MAX"] = (1.0, 5.0)
+            cal_bounds["IRUE"] = (1.0, 5.0)
+        if c_sla:
+            cal_bounds["SLA"] = (0.005, 0.05)
+        if c_tbd:
+            cal_bounds["TBD"] = (0.0, 15.0)
+        if c_phyl:
+            cal_bounds["PHYL"] = (20.0, 100.0)
+        if c_sow:
+            cal_bounds["bdSOWEMR"] = (1.0, 10.0)
+        if c_eju:
+            cal_bounds["bdEMREJU"] = (5.0, 25.0)
+        if c_sil:
+            cal_bounds["bdSILPM"] = (10.0, 60.0)
+            
+        # 5. Run Search Button
+        if st.button("🚀 Run Calibration Optimization Search", width='stretch', key="cal_run_opt_search_btn"):
+            valid_obs = [o for o in edited_obs if o.get("Year") is not None and o.get("Observed Yield (t/ha)") is not None]
+            if not valid_obs:
+                st.error("❌ Observed records matrix is empty. Please enter at least 1 valid Year and Observed Yield row.")
+            elif not cal_bounds:
+                st.error("❌ Please select at least 1 crop physiological coefficient to calibrate.")
+            else:
+                cal_weather_ok = True
+                if "📂 Use Current Uploaded Weather" in cal_weather_src:
+                    if effective_cal_weather_df is None:
+                        st.error("❌ No weather file uploaded. Please upload a weather file or choose the coordinates satellite auto-fetch.")
+                        cal_weather_ok = False
+                else:
+                    years_list = sorted(list({int(o["Year"]) for o in valid_obs}))
+                    start_y_val = f"{years_list[0]}-01-01"
+                    end_y_val = f"{years_list[-1]}-12-31"
+                    
+                    with st.spinner("⏳ Querying Open-Meteo satellite weather API for observed timeframe..."):
+                        try:
+                            effective_cal_weather_df = fetch_openmeteo_weather(
+                                latitude=st.session_state.latitude,
+                                longitude=st.session_state.longitude,
+                                start_date=start_y_val,
+                                end_date=end_y_val
+                            )
+                            if effective_cal_weather_df is None:
+                                raise ConnectionError("Open-Meteo API returned empty dataset.")
+                            st.success(f"✅ Ingested weather matrix from satellite coordinates reanalysis.")
+                        except Exception as w_err:
+                            st.warning(f"⚠️ Satellite API query failed ({w_err}). Reverting to baseline climatological weather.")
+                            effective_cal_weather_df = get_fallback_weather(start_y_val, end_y_val)
+                            
+                if cal_weather_ok and effective_cal_weather_df is not None:
+                    with st.spinner("⚙️ Executing crop physiological optimization algorithms safely..."):
+                        weather_sorted = effective_cal_weather_df.copy()
+                        weather_sorted.columns = [str(c).upper() for c in weather_sorted.columns]
+                        weather_sorted = weather_sorted.sort_values(by=['YEAR', 'DOY']).reset_index(drop=True)
+                        
+                        progress_element = st.progress(0)
+                        def progress_cb(current, total):
+                            pct = int((current / total) * 100)
+                            progress_element.progress(min(100, pct))
+                            
+                        c_type = "Maize"
+                        if "Sorghum" in st.session_state.get("icrop2_selected_crop_profile", "Maize"):
+                            c_type = "Sorghum"
+                            
+                        soil_config = {
+                            "depth_mm": st.session_state.get("icrop2_depth_key", 1200),
+                            "initial_water_percent": st.session_state.get("icrop2_initial_water_key", 25.0),
+                            "pawc_mm_m": st.session_state.get("icrop2_pawc_key", 150.0),
+                            "som_percent": st.session_state.get("icrop2_som_key", 2.5)
+                        }
+                        
+                        try:
+                            opt_params, orig_rmse, best_rmse = run_calibration_search(
+                                observed_data=valid_obs,
+                                weather_target_df=weather_sorted,
+                                soil_target_profile=effective_cal_soil_params,
+                                parameter_bounds=cal_bounds,
+                                crop_type=c_type,
+                                latitude=st.session_state.latitude,
+                                soil_config=soil_config,
+                                fertilizer_schedule=st.session_state.icrop2_fertilizer_rounds,
+                                water_management={"auto_irrigation": "Automatic" in st.session_state.get("icrop2_auto_irrigation_key", "Rainfed")},
+                                engine_mode="Advanced",
+                                advanced_options={"use_moisture": True, "use_nitrogen": True},
+                                progress_callback=progress_cb
+                            )
+                            
+                            st.session_state.icrop2_calibration_best_params = opt_params
+                            st.session_state.icrop2_calibration_orig_rmse = orig_rmse
+                            st.session_state.icrop2_calibration_best_rmse = best_rmse
+                            st.success("🎉 Crop optimization completed successfully!")
+                            progress_element.empty()
+                            st.rerun()
+                        except Exception as e_cal:
+                            st.error(f"Calibration optimization failed: {e_cal}")
+                            
+        # 6. Report Calibration View & Save to SQLite
+        if "icrop2_calibration_best_params" in st.session_state:
+            st.markdown("### 📊 Calibration Optimization Report")
+            best_params = st.session_state.icrop2_calibration_best_params
+            orig_rmse = st.session_state.icrop2_calibration_orig_rmse
+            best_rmse = st.session_state.icrop2_calibration_best_rmse
+            
+            c_type = "Maize"
+            if "Sorghum" in st.session_state.get("icrop2_selected_crop_profile", "Maize"):
+                c_type = "Sorghum"
+                
+            col_rm1, col_rm2, col_rm3 = st.columns(3)
+            col_rm1.metric("Original Model RMSE", f"{orig_rmse:.3f} t/ha")
+            col_rm2.metric("Optimized Model RMSE", f"{best_rmse:.3f} t/ha")
+            pct_imp = ((orig_rmse - best_rmse) / max(0.01, orig_rmse)) * 100.0 if orig_rmse != float('inf') else 100.0
+            col_rm3.metric("Error Reduction", f"{pct_imp:.1f}%")
+            
+            st.markdown("##### ⚙️ Comparative Parameter Grid")
+            comp_rows = []
+            for p_name in best_params.keys():
+                if p_name == "IRUE" and "RUE_MAX" in best_params:
+                    continue
+                orig_val = DEFAULT_CROP_PARAMETERS[c_type].get(p_name, 0.0)
+                opt_val = best_params[p_name]
+                comp_rows.append({
+                    "Parameter Name": p_name,
+                    "Original Value": round(orig_val, 4),
+                    "Calibrated Value": round(opt_val, 4),
+                    "Absolute Change": round(opt_val - orig_val, 4)
+                })
+            st.dataframe(pd.DataFrame(comp_rows), use_container_width=True)
+            
+            st.markdown("##### 💾 Persist Calibrated Variety to Database")
+            with st.form("save_calibrated_variety_form"):
+                new_cal_name = st.text_input("Calibrated Cultivar Name", placeholder="e.g. Maize-Hybrid-Ohio-2026")
+                new_cal_public = st.checkbox("🌐 Share with the community library", value=False)
+                
+                if st.form_submit_button("💾 Save as Custom Calibrated Variety"):
+                    if not new_cal_name.strip():
+                        st.error("Name field cannot be blank!")
+                    else:
+                        new_params = DEFAULT_CROP_PARAMETERS[c_type].copy()
+                        new_params.update(best_params)
+                        if "RUE_MAX" in best_params:
+                            new_params["IRUE"] = best_params["RUE_MAX"]
+                            
+                        is_pub = 1 if new_cal_public else 0
+                        created_by_user = st.session_state.icrop2_user_id
+                        
+                        try:
+                            with db.get_connection() as conn:
+                                cursor = conn.cursor()
+                                cursor.execute("""
+                                    INSERT OR REPLACE INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter, is_public, created_by_user_id)
+                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                """, (new_cal_name.strip(), "Calibrated", json.dumps(new_params), new_params.get("crop_produce_type", "Fruit/Seed"), new_params.get("lifecycle_strategy", "Annual (Single-Season)"), new_params.get("t_dormancy_trigger", 5.0), new_params.get("t_base_winter", 0.0), is_pub, created_by_user))
+                                conn.commit()
+                            st.success(f"🎉 Persisted custom calibrated cultivar '{new_cal_name}' successfully!")
+                            
+                            if is_pub:
+                                st.session_state["icrop2_selected_crop_profile"] = f"🌐 Public Custom: {new_cal_name.strip()} (Calibrated)"
+                            else:
+                                st.session_state["icrop2_selected_crop_profile"] = f"🔒 Private Custom: {new_cal_name.strip()} (Calibrated)"
+                            
+                            del st.session_state.icrop2_calibration_best_params
+                            st.rerun()
+                        except Exception as e_save:
+                            st.error(f"Failed to persist variety: {e_save}")
+
+    if st.session_state.get("icrop2_user_tier") == "Admin":
+        with tab_admin:
+            st.subheader("🛡️ Administrative Control Panel")
+            
+            # Sub-tab 1: User limits and storage allocations
+            st.markdown("### 👥 User Storage Limits & Account Adjustments")
+            all_users = db.get_all_users()
+            
+            # Display a nice administrative table grid
+            for usr in all_users:
+                with st.container():
+                    st.markdown(f"**User:** {usr['name']} (`{usr['username']}`) — *{usr['user_tier']}*")
+                    col_usr1, col_usr2, col_usr3 = st.columns([2, 1, 1])
+                    col_usr1.write(f"📧 Email: {usr['email']} | 🏫 Organization: {usr['bio_organization'] or usr['workplace']}")
+                    
+                    new_lim = col_usr2.number_input(
+                        "Storage Run Limit",
+                        min_value=5,
+                        max_value=1000,
+                        value=int(usr["run_limit"]),
+                        key=f"admin_usr_lim_{usr['id']}"
+                    )
+                    
+                    # Update database if limit is changed
+                    if new_lim != usr["run_limit"]:
+                        if db.update_user_run_limit(usr["id"], new_lim):
+                            st.toast(f"✅ Run storage limit for '{usr['username']}' updated to {new_lim}!")
+                            st.rerun()
+                            
+                    st.markdown("---")
+                    
+            # Sub-tab 2: Master Crop CRUD Manager
+            st.markdown("### 🌾 Master Crop Preset CRUD Manager")
+            
+            master_crops = db.get_seeded_crops(st.session_state.icrop2_user_id) # Seeded master crops inside 'crops' table
+            
+            st.write("Below are the pre-seeded public crop cultivars from the database. Administrators can edit parameters or delete cultivars.")
+            
+            for m_crop in master_crops:
+                # Only CRUD actual master presets or admin seeded crops (is_public = 1)
+                if m_crop.get("is_public", 1) == 1:
+                    with st.expander(f"📦 Master Cultivar: {m_crop['crop_name']} ({m_crop['cultivar']})", expanded=False):
+                        m_params = m_crop["parameters"]
+                        
+                        # Expose key parameters for editing
+                        col_e1, col_e2, col_e3 = st.columns(3)
+                        e_tbd = col_e1.number_input("Base Temp (TBD)", value=float(m_params.get("TBD", 8.0)), key=f"edit_tbd_{m_crop['id']}")
+                        e_rue = col_e2.number_input("Max RUE", value=float(m_params.get("RUE_MAX", 3.5)), key=f"edit_rue_{m_crop['id']}")
+                        e_sla = col_e3.number_input("SLA (m²/g)", value=float(m_params.get("SLA", 0.022)), format="%.4f", key=f"edit_sla_{m_crop['id']}")
+                        
+                        col_btn1, col_btn2 = st.columns(2)
+                        if col_btn1.button("💾 Save Parameters Overwrite", key=f"save_m_crop_{m_crop['id']}"):
+                            # Construct parameters dictionary
+                            updated_params = m_params.copy()
+                            updated_params["TBD"] = e_tbd
+                            updated_params["RUE_MAX"] = e_rue
+                            updated_params["IRUE"] = e_rue
+                            updated_params["SLA"] = e_sla
+                            
+                            # Save back to 'crops' table
+                            with db.get_connection() as conn:
+                                cursor = conn.cursor()
+                                cursor.execute("UPDATE crops SET parameters_json = ? WHERE id = ?", (json.dumps(updated_params), m_crop["id"]))
+                                conn.commit()
+                            st.success(f"✅ Overwrote parameters for master crop variety '{m_crop['crop_name']}'!")
+                            st.rerun()
+                            
+                        if col_btn2.button("🗑️ Delete Master Cultivar", key=f"del_m_crop_{m_crop['id']}"):
+                            db.delete_master_crop(m_crop["id"])
+                            st.toast(f"❌ Deleted master crop variety '{m_crop['crop_name']}'!")
+                            st.rerun()
+                        
+            # Register a New Master Preset
+            st.markdown("#### ➕ Add New Master Crop Preset")
+            with st.form("new_master_crop_form"):
+                new_m_name = st.text_input("Master Crop Name (e.g. Rice)")
+                new_m_cultivar = st.text_input("Master Cultivar (e.g. IR64)")
+                new_m_tbd = st.number_input("Base Temp (TBD)", value=8.0)
+                new_m_rue = st.number_input("Max RUE", value=3.0)
+                new_m_sla = st.number_input("SLA", value=0.022, format="%.4f")
+                
+                if st.form_submit_button("Register Master Crop"):
+                    if not new_m_name.strip() or not new_m_cultivar.strip():
+                        st.error("Name and Cultivar fields cannot be blank!")
+                    else:
+                        m_params = DEFAULT_CROP_PARAMETERS["Maize"].copy()
+                        m_params["TBD"] = new_m_tbd
+                        m_params["RUE_MAX"] = new_m_rue
+                        m_params["IRUE"] = new_m_rue
+                        m_params["SLA"] = new_m_sla
+                        
+                        with db.get_connection() as conn:
+                            cursor = conn.cursor()
+                            cursor.execute("""
+                                INSERT OR REPLACE INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter, is_public)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+                            """, (new_m_name.strip(), new_m_cultivar.strip(), json.dumps(m_params), "Fruit/Seed", "Annual (Single-Season)", 5.0, 0.0))
+                            conn.commit()
+                        st.success(f"🎉 Registered new master crop variety '{new_m_name} ({new_m_cultivar})'!")
+                        st.rerun()

@@ -189,7 +189,7 @@ def authenticate_secure_user(username: str, password: str, ip_address: str = "12
     with db.get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT id, password_hash, is_verified, lockout_until, login_attempts, email, name, workplace
+            SELECT id, password_hash, is_verified, lockout_until, login_attempts, email, name, workplace, user_tier, run_limit
             FROM users 
             WHERE username = ? OR email = ?
         """, (username_clean, username_clean.lower()))
@@ -200,7 +200,7 @@ def authenticate_secure_user(username: str, password: str, ip_address: str = "12
             hash_password(password)
             return False, "Authentication failed. Invalid username or password.", None
             
-        uid, pwd_hash, is_verified, lockout_until, attempts, email, name, workplace = row
+        uid, pwd_hash, is_verified, lockout_until, attempts, email, name, workplace, user_tier, run_limit = row
         
         # Resolve the canonical DB username (user may have logged in via email)
         cursor.execute("SELECT username FROM users WHERE id = ?", (uid,))
@@ -244,7 +244,9 @@ def authenticate_secure_user(username: str, password: str, ip_address: str = "12
                 "workplace": workplace,
                 "is_verified": is_verified,
                 "session_token": session_token,
-                "session_key": session_key
+                "session_key": session_key,
+                "user_tier": user_tier or 'Researcher',
+                "run_limit": run_limit if run_limit is not None else 50
             }
             return True, "Login successful!", user_payload
         else:
@@ -522,7 +524,7 @@ def verify_session_token(token: str) -> Tuple[bool, Optional[Dict[str, Any]]]:
     with db.get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT id, username, email, name, workplace, is_verified, password_hash 
+            SELECT id, username, email, name, workplace, is_verified, password_hash, user_tier, run_limit 
             FROM users 
             WHERE session_token = ?
         """, (token_clean,))
@@ -531,7 +533,7 @@ def verify_session_token(token: str) -> Tuple[bool, Optional[Dict[str, Any]]]:
         if row is None:
             return False, None
             
-        uid, db_username, email, name, workplace, is_verified, pwd_hash = row
+        uid, db_username, email, name, workplace, is_verified, pwd_hash, user_tier, run_limit = row
         
         # Derive secure session key unique to that user session
         from utils.crypto_vault import CropCryptoVault
@@ -546,6 +548,8 @@ def verify_session_token(token: str) -> Tuple[bool, Optional[Dict[str, Any]]]:
             "workplace": workplace,
             "is_verified": is_verified,
             "session_token": token_clean,
-            "session_key": session_key
+            "session_key": session_key,
+            "user_tier": user_tier or 'Researcher',
+            "run_limit": run_limit if run_limit is not None else 50
         }
         return True, user_payload
