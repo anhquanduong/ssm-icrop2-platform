@@ -163,13 +163,23 @@ def import_master_crop_parameters(excel_path: str, db_path: str):
             )
         """)
 
-        # Insert or replace each crop record individually (executemany not wrapped by cursor)
+        # Insert or replace each crop record individually using cross-database compliant SELECT + INSERT/UPDATE
         for record in crop_records:
             try:
-                cursor.execute("""
-                    INSERT OR REPLACE INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                """, record)
+                crop_name, cultivar, params_json, c_prod, l_strat, t_dorm, t_base = record
+                cursor.execute("SELECT id FROM crops WHERE crop_name = ? AND cultivar = ?", (crop_name, cultivar))
+                existing = cursor.fetchone()
+                if existing:
+                    cursor.execute("""
+                        UPDATE crops 
+                        SET parameters_json = ?, crop_produce_type = ?, lifecycle_strategy = ?, t_dormancy_trigger = ?, t_base_winter = ?
+                        WHERE id = ?
+                    """, (params_json, c_prod, l_strat, t_dorm, t_base, existing[0]))
+                else:
+                    cursor.execute("""
+                        INSERT INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, record)
             except Exception as insert_err:
                 logger.warning(f"Skipping duplicate crop record: {insert_err}")
 
@@ -244,10 +254,20 @@ def check_and_seed_database(db_path: str, excel_path: Optional[str] = None):
                         cursor = conn.cursor()
                         for record in crop_records:
                             try:
-                                cursor.execute("""
-                                    INSERT OR REPLACE INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter)
-                                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                                """, record)
+                                crop_name, cultivar, params_json, c_prod, l_strat, t_dorm, t_base = record
+                                cursor.execute("SELECT id FROM crops WHERE crop_name = ? AND cultivar = ?", (crop_name, cultivar))
+                                existing = cursor.fetchone()
+                                if existing:
+                                    cursor.execute("""
+                                        UPDATE crops 
+                                        SET parameters_json = ?, crop_produce_type = ?, lifecycle_strategy = ?, t_dormancy_trigger = ?, t_base_winter = ?
+                                        WHERE id = ?
+                                    """, (params_json, c_prod, l_strat, t_dorm, t_base, existing[0]))
+                                else:
+                                    cursor.execute("""
+                                        INSERT INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter)
+                                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                                    """, record)
                             except Exception:
                                 pass
                         conn.commit()
