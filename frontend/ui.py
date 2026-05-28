@@ -1089,57 +1089,50 @@ with col_left:
             icon=folium.Icon(color="green", icon="info-sign")
         ).add_to(m)
         
-        # Render component inside st_folium with explicit center and zoom
+        # Render component inside st_folium with explicit center, zoom, and unique key returning only last_clicked to prevent lag
         map_data = st_folium(
             m,
             center=[st.session_state["latitude"], st.session_state["longitude"]],
             zoom=6,
-            width=700,
-            height=450,
-            key="icrop2_folium_map"
+            width="100%",
+            height=400,
+            key="icrop2_interactive_map",
+            returned_objects=["last_clicked"]
         )
         
         # 3. INTERCEPT AND PARSE MAP CLICKS SECURELY ACROSS RERUNS (Deferred Soil Fetching)
-        if st.session_state.get("icrop2_folium_map") and "last_clicked" in st.session_state["icrop2_folium_map"]:
-            click_data = st.session_state["icrop2_folium_map"]["last_clicked"]
-            if click_data:
-                new_lat = click_data.get("lat", st.session_state["latitude"])
-                new_lon = click_data.get("lng", st.session_state["longitude"])
-                
-                # If map click provides new values, update session states without auto-fetching soil (deferred to button)
-                if new_lat != st.session_state["latitude"] or new_lon != st.session_state["longitude"]:
-                    st.session_state["latitude"] = new_lat
-                    st.session_state["longitude"] = new_lon
-                    st.session_state["icrop2_lat_key"] = new_lat
-                    st.session_state["icrop2_lon_key"] = new_lon
-                    st.rerun()
+        if map_data and map_data.get("last_clicked"):
+            click_data = map_data["last_clicked"]
+            new_lat = round(click_data["lat"], 4)
+            new_lon = round(click_data["lng"], 4)
+            
+            # If map click provides new values, update session states without auto-fetching soil (deferred to button)
+            if new_lat != st.session_state["latitude"] or new_lon != st.session_state["longitude"]:
+                st.session_state["latitude"] = new_lat
+                st.session_state["longitude"] = new_lon
+                st.session_state["icrop2_lat_key"] = new_lat
+                st.session_state["icrop2_lon_key"] = new_lon
+                st.rerun()
 
-        # 4. BALANCED NUMERIC ENTRY SYNC BINDING DIRECTLY TO PERSISTENT STATE KEYS
+        # 4. ALIGNED MANUAL NUMERIC INPUTS WITH DUAL BINDING
         c_lat, c_lon = st.columns(2)
         
         manual_lat = c_lat.number_input(
             "Latitude", 
             format="%.4f", 
-            value=float(st.session_state["latitude"]),
-            key="manual_latitude_input"
+            key="latitude"
         )
         manual_lon = c_lon.number_input(
             "Longitude", 
             format="%.4f", 
-            value=float(st.session_state["longitude"]),
-            key="manual_longitude_input"
+            key="longitude"
         )
         
-        # Sync manually typed coordinates immediately to session states
-        if manual_lat != st.session_state["latitude"]:
-            st.session_state["latitude"] = manual_lat
-            st.session_state["icrop2_lat_key"] = manual_lat
-            st.rerun()
-            
-        if manual_lon != st.session_state["longitude"]:
-            st.session_state["longitude"] = manual_lon
-            st.session_state["icrop2_lon_key"] = manual_lon
-            st.rerun()
+        # Sync manually typed coordinates immediately to session state master keys
+        if st.session_state["latitude"] != st.session_state.get("icrop2_lat_key"):
+            st.session_state["icrop2_lat_key"] = st.session_state["latitude"]
+        if st.session_state["longitude"] != st.session_state.get("icrop2_lon_key"):
+            st.session_state["icrop2_lon_key"] = st.session_state["longitude"]
         
         # --- Soil Data Failover/Override System Interface ---
         st.markdown("##### ⚙️ Soil Data Source & Failover Settings")
