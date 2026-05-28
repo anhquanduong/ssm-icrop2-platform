@@ -320,7 +320,7 @@ if "session_token" in query_params:
 
 # Check cookies for persistent sessions if not currently authenticated
 if not st.session_state.icrop2_logged_in:
-    token = controller.get("icrop2_session_token")
+    token = controller.get("icrop2_user_session") or controller.get("icrop2_session_token")
     if token:
         s_success, s_payload = verify_session_token(token)
         if s_success:
@@ -328,6 +328,7 @@ if not st.session_state.icrop2_logged_in:
             st.session_state["authenticated"] = True
             st.session_state.icrop2_user_id = s_payload["user_id"]
             st.session_state.icrop2_username = s_payload["username"]
+            st.session_state["username"] = s_payload["username"]
             st.session_state.icrop2_email = s_payload["email"]
             st.session_state.icrop2_name = s_payload["name"]
             st.session_state.icrop2_workplace = s_payload["workplace"]
@@ -391,6 +392,7 @@ if not st.session_state.icrop2_logged_in:
                 st.session_state["authenticated"] = True
                 st.session_state.icrop2_user_id = payload["user_id"]
                 st.session_state.icrop2_username = payload["username"]
+                st.session_state["username"] = payload["username"]
                 st.session_state.icrop2_email = payload["email"]
                 st.session_state.icrop2_name = payload["name"]
                 st.session_state.icrop2_workplace = payload["workplace"]
@@ -400,6 +402,7 @@ if not st.session_state.icrop2_logged_in:
                 st.session_state.icrop2_user_tier = payload.get("user_tier", "Researcher")
                 st.session_state.icrop2_run_limit = payload.get("run_limit", 50)
                 
+                controller.set("icrop2_user_session", payload["session_token"])
                 controller.set("icrop2_session_token", payload["session_token"])
                 st.success("Access Granted! Loading C4 simulation core...")
                 import time
@@ -506,6 +509,7 @@ if st.sidebar.button("🚪 Log Out", width='stretch'):
     st.session_state["authenticated"] = False
     st.session_state.icrop2_user_id = None
     st.session_state.icrop2_username = None
+    st.session_state["username"] = None
     st.session_state.icrop2_email = None
     st.session_state.icrop2_name = None
     st.session_state.icrop2_workplace = None
@@ -515,6 +519,7 @@ if st.sidebar.button("🚪 Log Out", width='stretch'):
     st.session_state.icrop2_user_tier = "Researcher"
     st.session_state.icrop2_run_limit = 50
     
+    controller.remove("icrop2_user_session")
     controller.remove("icrop2_session_token")
     import time
     time.sleep(0.5)  # Buffer to allow browser storage removal before Streamlit rerun
