@@ -2466,8 +2466,9 @@ with col_right:
                 {"Year": 2020, "Observed Yield (t/ha)": 7.8, "Observed Peak LAI (Optional)": 4.2}
             ])
             
-        with st.form("calibration_data_form"):
-            edited_df = st.data_editor(
+        with st.form("observed_yields_entry_form"):
+            st.markdown("### ✍️ Input Real Historical Observations")
+            updated_data = st.data_editor(
                 st.session_state["calibration_grid"],
                 use_container_width=True,
                 num_rows="dynamic",
@@ -2478,11 +2479,11 @@ with col_right:
                     "Observed Peak LAI (Optional)": st.column_config.NumberColumn("Observed Peak LAI (Optional)", min_value=0.0, max_value=15.0, step=0.1)
                 }
             )
-            submit_inputs = st.form_submit_button("🔒 Lock & Validate Observed Yields")
+            submit_lock = st.form_submit_button("🔒 Lock & Validate Fields")
             
-        if submit_inputs:
-            st.session_state["calibration_grid"] = edited_df
-            st.success("Observed dataset rows locked in safely!")
+        if submit_lock:
+            st.session_state["calibration_grid"] = updated_data
+            st.success("Target observations (Yield/LAI) securely locked in memory!")
             
         obs_df = st.session_state["calibration_grid"]
         if isinstance(obs_df, pd.DataFrame):
@@ -2548,7 +2549,9 @@ with col_right:
                                 raise ConnectionError("Open-Meteo API returned empty dataset.")
                             st.success(f"✅ Ingested weather matrix from satellite coordinates reanalysis.")
                         except Exception as w_err:
-                            st.warning(f"⚠️ Satellite API query failed ({w_err}). Reverting to baseline climatological weather.")
+                            st.error("📡 Satellite Weather API Query Failed!")
+                            st.info("⚠️ Error Details: " + str(w_err))
+                            st.warning("👉 The automated cloud weather stream is currently unreachable. Please switch your data source to 'Upload Local Weather File' and drop your station (.csv/.xlsx) timeline sheet below to proceed with the simulation.")
                             effective_cal_weather_df = get_fallback_weather(start_y_val, end_y_val)
                             
                 if cal_weather_ok and effective_cal_weather_df is not None:

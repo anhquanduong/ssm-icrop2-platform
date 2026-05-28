@@ -34,6 +34,25 @@ def run_calibration_search(
     if not parameter_bounds:
         raise ValueError("No variables selected for SciPy calibration adjustment!")
         
+    # Enforce physically realistic biophysical optimization boundaries
+    safe_bounds = {}
+    for k, v in parameter_bounds.items():
+        low, high = v
+        if k in ["IRUE", "RUE_MAX", "RUE"]:
+            low = max(low, 1.0)
+            high = min(high, 2.5)
+        elif k in ["TBD", "t_base", "BaseTemp"]:
+            low = max(low, 0.0)
+            high = min(high, 15.0)
+        elif k in ["TP1D", "TP2D", "t_opt1", "t_opt2"]:
+            low = max(low, 20.0)
+            high = min(high, 35.0)
+        
+        if low >= high:
+            high = low + 0.1
+        safe_bounds[k] = (low, high)
+    parameter_bounds = safe_bounds
+
     num_params = len(parameter_bounds)
     logger.info(f"Initiating calibration optimizer for crop '{crop_type}' on {num_params} variables.")
     
