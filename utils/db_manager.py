@@ -52,6 +52,14 @@ class DatabaseManager:
         Performs dynamic schema migrations (ALTER TABLE) to append columns if upgrading.
         """
         with self.get_connection() as conn:
+            if getattr(conn, "is_postgres", False):
+                try:
+                    from core.database import migrate_database_schema
+                    migrate_database_schema(conn)
+                except Exception as migrate_err:
+                    logger.error(f"Failed to execute core PostgreSQL database schema migrations: {migrate_err}")
+                return
+
             cursor = conn.cursor()
             
             # 1. Create Users Table (Baseline)

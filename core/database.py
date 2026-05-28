@@ -260,6 +260,27 @@ def migrate_database_schema(conn):
             )
         """)
         
+        # Robust migrations for users table if it already exists from baseline
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS email VARCHAR(255) UNIQUE")
+            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS name VARCHAR(255)")
+            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS workplace VARCHAR(255)")
+            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_verified INTEGER DEFAULT 0")
+            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_token TEXT")
+            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token TEXT")
+            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS token_expiry VARCHAR(255)")
+            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS login_attempts INTEGER DEFAULT 0")
+            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS lockout_until VARCHAR(255)")
+            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS last_verification_sent VARCHAR(255)")
+            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS session_token TEXT")
+            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS user_tier VARCHAR(255) DEFAULT 'Researcher'")
+            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS run_limit INTEGER DEFAULT 50")
+            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS bio_name VARCHAR(255)")
+            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS bio_organization VARCHAR(255)")
+            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS bio_text TEXT")
+        except Exception as e:
+            logger.warning(f"Postgres users migration bypassed: {e}")
+            
         # Promote Admin email automatically
         try:
             cursor.execute("UPDATE users SET user_tier = 'Admin' WHERE email = 'duonganhquan@humg.edu.vn'")
@@ -281,6 +302,17 @@ def migrate_database_schema(conn):
                 created_by_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL
             )
         """)
+        
+        # Robust migrations for crops table
+        try:
+            cursor.execute("ALTER TABLE crops ADD COLUMN IF NOT EXISTS crop_produce_type VARCHAR(255)")
+            cursor.execute("ALTER TABLE crops ADD COLUMN IF NOT EXISTS lifecycle_strategy VARCHAR(255)")
+            cursor.execute("ALTER TABLE crops ADD COLUMN IF NOT EXISTS t_dormancy_trigger DOUBLE PRECISION")
+            cursor.execute("ALTER TABLE crops ADD COLUMN IF NOT EXISTS t_base_winter DOUBLE PRECISION")
+            cursor.execute("ALTER TABLE crops ADD COLUMN IF NOT EXISTS is_public INTEGER DEFAULT 1")
+            cursor.execute("ALTER TABLE crops ADD COLUMN IF NOT EXISTS created_by_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL")
+        except Exception as e:
+            logger.warning(f"Postgres crops migration bypassed: {e}")
         
         # 3. Create Simulation History Table
         cursor.execute("""
@@ -313,9 +345,22 @@ def migrate_database_schema(conn):
                 user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
                 crop_name VARCHAR(255) NOT NULL,
                 is_public INTEGER NOT NULL CHECK (is_public IN (0, 1)),
-                parameters_json TEXT NOT NULL
+                parameters_json TEXT NOT NULL,
+                crop_produce_type VARCHAR(255),
+                lifecycle_strategy VARCHAR(255),
+                t_dormancy_trigger DOUBLE PRECISION,
+                t_base_winter DOUBLE PRECISION
             )
         """)
+        
+        # Robust migrations for crop_profiles table
+        try:
+            cursor.execute("ALTER TABLE crop_profiles ADD COLUMN IF NOT EXISTS crop_produce_type VARCHAR(255)")
+            cursor.execute("ALTER TABLE crop_profiles ADD COLUMN IF NOT EXISTS lifecycle_strategy VARCHAR(255)")
+            cursor.execute("ALTER TABLE crop_profiles ADD COLUMN IF NOT EXISTS t_dormancy_trigger DOUBLE PRECISION")
+            cursor.execute("ALTER TABLE crop_profiles ADD COLUMN IF NOT EXISTS t_base_winter DOUBLE PRECISION")
+        except Exception as e:
+            logger.warning(f"Postgres crop_profiles migration bypassed: {e}")
         
         # 6. Create Security Logs Table
         cursor.execute("""
