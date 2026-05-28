@@ -33,12 +33,13 @@ class DatabaseManager:
         self.initialize_schema()
 
     @contextmanager
-    def get_connection(self) -> sqlite3.Connection:
+    def get_connection(self):
         """
-        Yields a secure connection to the SQLite database and guarantees its clean closure on exit.
+        Yields a secure connection to either persistent PostgreSQL or SQLite fallback, 
+        guaranteeing clean closure on exit.
         """
-        conn = sqlite3.connect(self.db_path)
-        conn.execute("PRAGMA foreign_keys = ON;") # Enforce FK constraints
+        from core.database import get_database_connection
+        conn = get_database_connection()
         try:
             with conn:
                 yield conn

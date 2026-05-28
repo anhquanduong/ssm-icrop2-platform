@@ -8,4 +8,4 @@ requests
 cryptography
 xlrd
 streamlit-cookies-controller
-
+psycopg2-binary

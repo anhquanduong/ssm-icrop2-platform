@@ -144,7 +144,8 @@ def import_master_crop_parameters(excel_path: str, db_path: str):
             ))
             
     # Seed SQLite
-    conn = sqlite3.connect(db_path)
+    from core.database import get_database_connection
+    conn = get_database_connection()
     cursor = conn.cursor()
     
     # Ensure crops table exists
@@ -180,7 +181,8 @@ def check_and_seed_database(db_path: str, excel_path: Optional[str] = None):
     if excel_path is None:
         excel_path = DEFAULT_EXCEL_PATH
         
-    conn = sqlite3.connect(db_path)
+    from core.database import get_database_connection
+    conn = get_database_connection()
     cursor = conn.cursor()
     
     # Create crops table if not exists to avoid select operational errors
@@ -233,7 +235,8 @@ def check_and_seed_database(db_path: str, excel_path: Optional[str] = None):
                             r["t_base_winter"]
                         ))
                     
-                    conn = sqlite3.connect(db_path)
+                    from core.database import get_database_connection
+                    conn = get_database_connection()
                     cursor = conn.cursor()
                     cursor.executemany("""
                         INSERT OR REPLACE INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter)
