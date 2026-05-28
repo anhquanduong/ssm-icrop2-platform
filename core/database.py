@@ -262,30 +262,39 @@ def migrate_database_schema(conn):
         
         # Robust migrations for users table if it already exists from baseline
         try:
-            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS email VARCHAR(255) UNIQUE")
-            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS name VARCHAR(255)")
-            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS workplace VARCHAR(255)")
-            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_verified INTEGER DEFAULT 0")
-            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_token TEXT")
-            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token TEXT")
-            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS token_expiry VARCHAR(255)")
-            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS login_attempts INTEGER DEFAULT 0")
-            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS lockout_until VARCHAR(255)")
-            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS last_verification_sent VARCHAR(255)")
-            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS session_token TEXT")
-            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS user_tier VARCHAR(255) DEFAULT 'Researcher'")
-            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS run_limit INTEGER DEFAULT 50")
-            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS bio_name VARCHAR(255)")
-            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS bio_organization VARCHAR(255)")
-            cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS bio_text TEXT")
+            cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'users'")
+            users_cols = {col[0] for col in cursor.fetchall()}
+            
+            users_migrations = [
+                ("email", "VARCHAR(255) UNIQUE"),
+                ("name", "VARCHAR(255)"),
+                ("workplace", "VARCHAR(255)"),
+                ("is_verified", "INTEGER DEFAULT 0"),
+                ("verification_token", "TEXT"),
+                ("reset_token", "TEXT"),
+                ("token_expiry", "VARCHAR(255)"),
+                ("login_attempts", "INTEGER DEFAULT 0"),
+                ("lockout_until", "VARCHAR(255)"),
+                ("last_verification_sent", "VARCHAR(255)"),
+                ("session_token", "TEXT"),
+                ("user_tier", "VARCHAR(255) DEFAULT 'Researcher'"),
+                ("run_limit", "INTEGER DEFAULT 50"),
+                ("bio_name", "VARCHAR(255)"),
+                ("bio_organization", "VARCHAR(255)"),
+                ("bio_text", "TEXT")
+            ]
+            for col_name, col_def in users_migrations:
+                if col_name not in users_cols:
+                    cursor.execute(f"ALTER TABLE users ADD COLUMN {col_name} {col_def}")
         except Exception as e:
             logger.warning(f"Postgres users migration bypassed: {e}")
             
         # Promote Admin email automatically
-        try:
-            cursor.execute("UPDATE users SET user_tier = 'Admin' WHERE email = 'duonganhquan@humg.edu.vn'")
-        except Exception as e:
-            logger.warning(f"Postgres admin promotion bypassed: {e}")
+        if "user_tier" in users_cols and "email" in users_cols:
+            try:
+                cursor.execute("UPDATE users SET user_tier = 'Admin' WHERE email = 'duonganhquan@humg.edu.vn'")
+            except Exception as e:
+                logger.warning(f"Postgres admin promotion bypassed: {e}")
             
         # 2. Create Crops Table
         cursor.execute("""
@@ -305,12 +314,20 @@ def migrate_database_schema(conn):
         
         # Robust migrations for crops table
         try:
-            cursor.execute("ALTER TABLE crops ADD COLUMN IF NOT EXISTS crop_produce_type VARCHAR(255)")
-            cursor.execute("ALTER TABLE crops ADD COLUMN IF NOT EXISTS lifecycle_strategy VARCHAR(255)")
-            cursor.execute("ALTER TABLE crops ADD COLUMN IF NOT EXISTS t_dormancy_trigger DOUBLE PRECISION")
-            cursor.execute("ALTER TABLE crops ADD COLUMN IF NOT EXISTS t_base_winter DOUBLE PRECISION")
-            cursor.execute("ALTER TABLE crops ADD COLUMN IF NOT EXISTS is_public INTEGER DEFAULT 1")
-            cursor.execute("ALTER TABLE crops ADD COLUMN IF NOT EXISTS created_by_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL")
+            cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'crops'")
+            crops_cols = {col[0] for col in cursor.fetchall()}
+            
+            crops_migrations = [
+                ("crop_produce_type", "VARCHAR(255)"),
+                ("lifecycle_strategy", "VARCHAR(255)"),
+                ("t_dormancy_trigger", "DOUBLE PRECISION"),
+                ("t_base_winter", "DOUBLE PRECISION"),
+                ("is_public", "INTEGER DEFAULT 1"),
+                ("created_by_user_id", "INTEGER REFERENCES users(id) ON DELETE SET NULL")
+            ]
+            for col_name, col_def in crops_migrations:
+                if col_name not in crops_cols:
+                    cursor.execute(f"ALTER TABLE crops ADD COLUMN {col_name} {col_def}")
         except Exception as e:
             logger.warning(f"Postgres crops migration bypassed: {e}")
         
@@ -355,10 +372,18 @@ def migrate_database_schema(conn):
         
         # Robust migrations for crop_profiles table
         try:
-            cursor.execute("ALTER TABLE crop_profiles ADD COLUMN IF NOT EXISTS crop_produce_type VARCHAR(255)")
-            cursor.execute("ALTER TABLE crop_profiles ADD COLUMN IF NOT EXISTS lifecycle_strategy VARCHAR(255)")
-            cursor.execute("ALTER TABLE crop_profiles ADD COLUMN IF NOT EXISTS t_dormancy_trigger DOUBLE PRECISION")
-            cursor.execute("ALTER TABLE crop_profiles ADD COLUMN IF NOT EXISTS t_base_winter DOUBLE PRECISION")
+            cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'crop_profiles'")
+            profiles_cols = {col[0] for col in cursor.fetchall()}
+            
+            profiles_migrations = [
+                ("crop_produce_type", "VARCHAR(255)"),
+                ("lifecycle_strategy", "VARCHAR(255)"),
+                ("t_dormancy_trigger", "DOUBLE PRECISION"),
+                ("t_base_winter", "DOUBLE PRECISION")
+            ]
+            for col_name, col_def in profiles_migrations:
+                if col_name not in profiles_cols:
+                    cursor.execute(f"ALTER TABLE crop_profiles ADD COLUMN {col_name} {col_def}")
         except Exception as e:
             logger.warning(f"Postgres crop_profiles migration bypassed: {e}")
         

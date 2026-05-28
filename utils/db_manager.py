@@ -53,11 +53,8 @@ class DatabaseManager:
         """
         with self.get_connection() as conn:
             if getattr(conn, "is_postgres", False):
-                try:
-                    from core.database import migrate_database_schema
-                    migrate_database_schema(conn)
-                except Exception as migrate_err:
-                    logger.error(f"Failed to execute core PostgreSQL database schema migrations: {migrate_err}")
+                from core.database import migrate_database_schema
+                migrate_database_schema(conn)
                 return
 
             cursor = conn.cursor()
