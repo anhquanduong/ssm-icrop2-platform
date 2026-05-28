@@ -39,7 +39,7 @@ class DatabaseManager:
         guaranteeing clean closure on exit.
         """
         from core.database import get_database_connection
-        conn = get_database_connection()
+        conn = get_database_connection(db_path=self.db_path)
         try:
             with conn:
                 yield conn

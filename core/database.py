@@ -129,7 +129,7 @@ class DialectAgnosticConnection:
             self.commit()
         self.close()
 
-def get_database_connection():
+def get_database_connection(db_path=None):
     """
     Generates a secure database connection.
     Connects to external persistent PostgreSQL if enabled; otherwise falls back to SQLite.
@@ -137,19 +137,27 @@ def get_database_connection():
     if is_postgres_enabled():
         import streamlit as st
         import psycopg2
-        pg_secrets = st.secrets["postgres"]
-        conn = psycopg2.connect(
-            host=pg_secrets["host"],
-            port=int(pg_secrets.get("port", 5432)),
-            database=pg_secrets["database"],
-            user=pg_secrets["username"],
-            password=pg_secrets["password"]
-        )
-        return DialectAgnosticConnection(conn, is_postgres=True)
-    else:
+        try:
+            pg_secrets = st.secrets["postgres"]
+            conn = psycopg2.connect(
+                host=pg_secrets["host"],
+                port=int(pg_secrets.get("port", 5432)),
+                database=pg_secrets["database"],
+                user=pg_secrets["username"],
+                password=pg_secrets["password"],
+                connect_timeout=3
+            )
+            return DialectAgnosticConnection(conn, is_postgres=True)
+        except Exception as conn_err:
+            logger.warning(
+                f"PostgreSQL connection failed ({conn_err}). "
+                "Resiliently falling back to local SQLite app_v2.db!"
+            )
+            
+    if db_path is None:
         db_path = get_persistent_db_path()
-        conn = sqlite3.connect(db_path)
-        return DialectAgnosticConnection(conn, is_postgres=False)
+    conn = sqlite3.connect(db_path)
+    return DialectAgnosticConnection(conn, is_postgres=False)
 
 def get_persistent_db_path() -> str:
     """
@@ -185,7 +193,7 @@ def migrate_database_schema(conn):
     """
     cursor = conn.cursor()
     
-    if is_postgres_enabled():
+    if getattr(conn, "is_postgres", False):
         logger.info("Initializing persistent PostgreSQL schema and constraints...")
         
         # 1. Create Users Table
