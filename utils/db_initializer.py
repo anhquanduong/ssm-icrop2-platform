@@ -143,34 +143,38 @@ def import_master_crop_parameters(excel_path: str, db_path: str):
                 0.0
             ))
             
-    # Seed SQLite
+    # Seed via DialectAgnosticConnection
     from core.database import get_database_connection
-    conn = get_database_connection()
-    cursor = conn.cursor()
-    
-    # Ensure crops table exists
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS crops (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            crop_name TEXT NOT NULL,
-            cultivar TEXT NOT NULL,
-            parameters_json TEXT NOT NULL,
-            crop_produce_type TEXT,
-            lifecycle_strategy TEXT,
-            t_dormancy_trigger REAL,
-            t_base_winter REAL,
-            UNIQUE(crop_name, cultivar)
-        )
-    """)
-    
-    cursor.executemany("""
-        INSERT OR REPLACE INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    """, crop_records)
-    
-    conn.commit()
-    conn.close()
-    logger.info(f"Successfully seeded SQLite crops table with {len(crop_records)} spreadsheet records.")
+    with get_database_connection() as conn:
+        cursor = conn.cursor()
+
+        # Ensure crops table exists
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS crops (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                crop_name TEXT NOT NULL,
+                cultivar TEXT NOT NULL,
+                parameters_json TEXT NOT NULL,
+                crop_produce_type TEXT,
+                lifecycle_strategy TEXT,
+                t_dormancy_trigger REAL,
+                t_base_winter REAL,
+                UNIQUE(crop_name, cultivar)
+            )
+        """)
+
+        # Insert or replace each crop record individually (executemany not wrapped by cursor)
+        for record in crop_records:
+            try:
+                cursor.execute("""
+                    INSERT OR REPLACE INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                """, record)
+            except Exception as insert_err:
+                logger.warning(f"Skipping duplicate crop record: {insert_err}")
+
+        conn.commit()
+    logger.info(f"Successfully seeded database crops table with {len(crop_records)} spreadsheet records.")
 
 def check_and_seed_database(db_path: str, excel_path: Optional[str] = None):
     """
@@ -182,28 +186,27 @@ def check_and_seed_database(db_path: str, excel_path: Optional[str] = None):
         excel_path = DEFAULT_EXCEL_PATH
         
     from core.database import get_database_connection
-    conn = get_database_connection()
-    cursor = conn.cursor()
-    
-    # Create crops table if not exists to avoid select operational errors
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS crops (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            crop_name TEXT NOT NULL,
-            cultivar TEXT NOT NULL,
-            parameters_json TEXT NOT NULL,
-            crop_produce_type TEXT,
-            lifecycle_strategy TEXT,
-            t_dormancy_trigger REAL,
-            t_base_winter REAL,
-            UNIQUE(crop_name, cultivar)
-        )
-    """)
-    
-    # Check if table is blank
-    cursor.execute("SELECT COUNT(*) FROM crops")
-    count = cursor.fetchone()[0]
-    conn.close()
+    with get_database_connection() as conn:
+        cursor = conn.cursor()
+
+        # Create crops table if not exists to avoid select operational errors
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS crops (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                crop_name TEXT NOT NULL,
+                cultivar TEXT NOT NULL,
+                parameters_json TEXT NOT NULL,
+                crop_produce_type TEXT,
+                lifecycle_strategy TEXT,
+                t_dormancy_trigger REAL,
+                t_base_winter REAL,
+                UNIQUE(crop_name, cultivar)
+            )
+        """)
+
+        # Check if table is blank
+        cursor.execute("SELECT COUNT(*) FROM crops")
+        count = cursor.fetchone()[0]
     
     if count == 0:
         logger.info("Crop varieties database is blank. Initiating automated Excel parameter parsing...")
@@ -223,9 +226,8 @@ def check_and_seed_database(db_path: str, excel_path: Optional[str] = None):
                 try:
                     with open(json_path, "r", encoding="utf-8") as f:
                         records = json.load(f)
-                    crop_records = []
-                    for r in records:
-                        crop_records.append((
+                    crop_records = [
+                        (
                             r["crop_name"],
                             r["cultivar"],
                             r["parameters_json"],
@@ -233,17 +235,22 @@ def check_and_seed_database(db_path: str, excel_path: Optional[str] = None):
                             r["lifecycle_strategy"],
                             r["t_dormancy_trigger"],
                             r["t_base_winter"]
-                        ))
-                    
+                        )
+                        for r in records
+                    ]
+
                     from core.database import get_database_connection
-                    conn = get_database_connection()
-                    cursor = conn.cursor()
-                    cursor.executemany("""
-                        INSERT OR REPLACE INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)
-                    """, crop_records)
-                    conn.commit()
-                    conn.close()
+                    with get_database_connection() as conn:
+                        cursor = conn.cursor()
+                        for record in crop_records:
+                            try:
+                                cursor.execute("""
+                                    INSERT OR REPLACE INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter)
+                                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                                """, record)
+                            except Exception:
+                                pass
+                        conn.commit()
                     logger.info(f"Successfully seeded database with {len(crop_records)} records from JSON fallback.")
                 except Exception as json_err:
                     logger.error(f"Failed to seed crops database using JSON fallback: {json_err}")

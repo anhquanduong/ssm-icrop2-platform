@@ -3,19 +3,42 @@ import logging
 import os
 import sys
 import json
+import time
 
 logger = logging.getLogger(__name__)
+
+# ---- In-process PostgreSQL reachability cache ----
+# Prevents a failed connection attempt from being retried on every
+# Streamlit rerun (which can fire 5-10 times per page interaction).
+# Format: {"reachable": bool, "checked_at": float (time.time())}
+_POSTGRES_CACHE_TTL_SECONDS = 60  # Re-test reachability every 60 seconds
+_postgres_reachable_cache: dict = {}
+
+# Placeholder hostnames that indicate the user has not yet configured secrets
+_PLACEHOLDER_HOSTNAMES = {
+    "your-database-host.com",
+    "your-host",
+    "localhost",     # uncomment if you want to block local-only too
+}
+
 
 def is_postgres_enabled() -> bool:
     """
     Checks if PostgreSQL is enabled in Streamlit secrets and not in a unit testing context.
+    Returns False immediately if the host is still a placeholder value.
     """
     is_testing = 'unittest' in sys.modules or any('unittest' in arg for arg in sys.argv)
     if is_testing:
         return False
     try:
         import streamlit as st
-        return "postgres" in st.secrets
+        if "postgres" not in st.secrets:
+            return False
+        host = st.secrets["postgres"].get("host", "")
+        # Reject unconfigured placeholder hostnames
+        if not host or host.strip().lower() in _PLACEHOLDER_HOSTNAMES:
+            return False
+        return True
     except Exception:
         return False
 
@@ -133,26 +156,41 @@ def get_database_connection(db_path=None):
     """
     Generates a secure database connection.
     Connects to external persistent PostgreSQL if enabled; otherwise falls back to SQLite.
+    Uses an in-process cache to avoid hammering a failing PostgreSQL server on every Streamlit rerun.
     """
+    global _postgres_reachable_cache
     if is_postgres_enabled():
         import streamlit as st
         import psycopg2
-        try:
-            pg_secrets = st.secrets["postgres"]
-            conn = psycopg2.connect(
-                host=pg_secrets["host"],
-                port=int(pg_secrets.get("port", 5432)),
-                database=pg_secrets["database"],
-                user=pg_secrets["username"],
-                password=pg_secrets["password"],
-                connect_timeout=3
-            )
-            return DialectAgnosticConnection(conn, is_postgres=True)
-        except Exception as conn_err:
-            logger.warning(
-                f"PostgreSQL connection failed ({conn_err}). "
-                "Resiliently falling back to local SQLite app_v2.db!"
-            )
+
+        # Check the in-process cache first
+        now = time.time()
+        cached = _postgres_reachable_cache
+        last_check = cached.get("checked_at", 0)
+        was_reachable = cached.get("reachable", None)
+
+        if was_reachable is False and (now - last_check) < _POSTGRES_CACHE_TTL_SECONDS:
+            # Still within the cooldown window — skip to SQLite immediately
+            pass
+        else:
+            try:
+                pg_secrets = st.secrets["postgres"]
+                conn = psycopg2.connect(
+                    host=pg_secrets["host"],
+                    port=int(pg_secrets.get("port", 5432)),
+                    database=pg_secrets["database"],
+                    user=pg_secrets["username"],
+                    password=pg_secrets["password"],
+                    connect_timeout=3
+                )
+                _postgres_reachable_cache = {"reachable": True, "checked_at": now}
+                return DialectAgnosticConnection(conn, is_postgres=True)
+            except Exception as conn_err:
+                _postgres_reachable_cache = {"reachable": False, "checked_at": now}
+                logger.warning(
+                    f"PostgreSQL connection failed ({conn_err}). "
+                    "Resiliently falling back to local SQLite app_v2.db!"
+                )
             
     if db_path is None:
         db_path = get_persistent_db_path()

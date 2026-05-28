@@ -2007,7 +2007,7 @@ with col_right:
                                 })
                         
                         summary_df = pd.DataFrame(matrix_rows)
-                        st.dataframe(summary_df, use_container_width=True)
+                        st.dataframe(summary_df, width='stretch')
                     
                 # Render Troubleshooting/Diagnostic logs
                 simulation_results = results_df
@@ -2022,7 +2022,7 @@ with col_right:
                     )
                     st.dataframe(
                         simulation_results["diagnostic_df"],
-                        use_container_width=True,
+                        width='stretch',
                         column_config={
                             "DAP": st.column_config.NumberColumn("DAP", help="Days After Planting"),
                             "DRAIN": st.column_config.NumberColumn("Drainage (mm)", help="Daily Drainage volume"),
@@ -2163,7 +2163,7 @@ with col_right:
                 )
                 
                 # Display the full interactive data frame spreadsheet matrix
-                st.dataframe(inspect_df, use_container_width=True)
+                st.dataframe(inspect_df, width='stretch')
             else:
                 st.info("No simulation runs recorded in the active workspace session ledger yet. Run a scenario to populate the detailed inspector.")
             
@@ -2475,7 +2475,7 @@ with col_right:
             st.markdown("### ✍️ Input Real Historical Observations")
             updated_data = st.data_editor(
                 st.session_state["calibration_grid"],
-                use_container_width=True,
+                width='stretch',
                 num_rows="dynamic",
                 key="cal_obs_editor_grid",
                 column_config={
@@ -2641,7 +2641,7 @@ with col_right:
                     "Calibrated Value": round(opt_val, 4),
                     "Absolute Change": round(opt_val - orig_val, 4)
                 })
-            st.dataframe(pd.DataFrame(comp_rows), use_container_width=True)
+            st.dataframe(pd.DataFrame(comp_rows), width='stretch')
             
             st.markdown("##### 💾 Persist Calibrated Variety to Database")
             with st.form("save_calibrated_variety_form"):
