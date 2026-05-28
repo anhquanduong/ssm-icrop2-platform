@@ -181,7 +181,8 @@ def get_database_connection(db_path=None):
                     database=pg_secrets["database"],
                     user=pg_secrets["username"],
                     password=pg_secrets["password"],
-                    connect_timeout=3
+                    connect_timeout=10,   # pooler needs more time than direct
+                    sslmode="require"     # Supabase mandates SSL on all connections
                 )
                 _postgres_reachable_cache = {"reachable": True, "checked_at": now}
                 return DialectAgnosticConnection(conn, is_postgres=True)
