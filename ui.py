@@ -2461,22 +2461,34 @@ with col_right:
             
         # 3. Observed Data Ledger
         st.markdown("### 🌾 Step 3: Enter Historical Observed Records")
-        if "icrop2_calibration_observed" not in st.session_state:
-            st.session_state.icrop2_calibration_observed = [
+        if "calibration_grid" not in st.session_state:
+            st.session_state["calibration_grid"] = pd.DataFrame([
                 {"Year": 2020, "Observed Yield (t/ha)": 7.8, "Observed Peak LAI (Optional)": 4.2}
-            ]
+            ])
             
-        edited_obs = st.data_editor(
-            st.session_state.icrop2_calibration_observed,
-            num_rows="dynamic",
-            key="cal_obs_editor_grid",
-            column_config={
-                "Year": st.column_config.NumberColumn("Year", min_value=1940, max_value=2026, format="%d"),
-                "Observed Yield (t/ha)": st.column_config.NumberColumn("Observed Yield (t/ha)", min_value=0.1, max_value=40.0, step=0.1),
-                "Observed Peak LAI (Optional)": st.column_config.NumberColumn("Observed Peak LAI (Optional)", min_value=0.0, max_value=15.0, step=0.1)
-            }
-        )
-        st.session_state.icrop2_calibration_observed = edited_obs
+        with st.form("calibration_data_form"):
+            edited_df = st.data_editor(
+                st.session_state["calibration_grid"],
+                use_container_width=True,
+                num_rows="dynamic",
+                key="cal_obs_editor_grid",
+                column_config={
+                    "Year": st.column_config.NumberColumn("Year", min_value=1940, max_value=2026, format="%d"),
+                    "Observed Yield (t/ha)": st.column_config.NumberColumn("Observed Yield (t/ha)", min_value=0.1, max_value=40.0, step=0.1),
+                    "Observed Peak LAI (Optional)": st.column_config.NumberColumn("Observed Peak LAI (Optional)", min_value=0.0, max_value=15.0, step=0.1)
+                }
+            )
+            submit_inputs = st.form_submit_button("🔒 Lock & Validate Observed Yields")
+            
+        if submit_inputs:
+            st.session_state["calibration_grid"] = edited_df
+            st.success("Observed dataset rows locked in safely!")
+            
+        obs_df = st.session_state["calibration_grid"]
+        if isinstance(obs_df, pd.DataFrame):
+            edited_obs = obs_df.to_dict(orient="records")
+        else:
+            edited_obs = obs_df
         
         # 4. Parameter Selection Checkboxes
         st.markdown("### ⚙️ Step 4: Select crop variables to estimate")
@@ -2527,8 +2539,8 @@ with col_right:
                     with st.spinner("⏳ Querying Open-Meteo satellite weather API for observed timeframe..."):
                         try:
                             effective_cal_weather_df = fetch_openmeteo_weather(
-                                latitude=st.session_state.latitude,
-                                longitude=st.session_state.longitude,
+                                lat=st.session_state.latitude,
+                                lon=st.session_state.longitude,
                                 start_date=start_y_val,
                                 end_date=end_y_val
                             )
@@ -2577,9 +2589,12 @@ with col_right:
                                 progress_callback=progress_cb
                             )
                             
-                            st.session_state.icrop2_calibration_best_params = opt_params
-                            st.session_state.icrop2_calibration_orig_rmse = orig_rmse
-                            st.session_state.icrop2_calibration_best_rmse = best_rmse
+                            st.session_state["calibration_results"] = {
+                                "optimized_params": opt_params,
+                                "initial_rmse": orig_rmse,
+                                "final_rmse": best_rmse,
+                                "has_run": True
+                            }
                             st.success("🎉 Crop optimization completed successfully!")
                             progress_element.empty()
                             st.rerun()
@@ -2587,11 +2602,13 @@ with col_right:
                             st.error(f"Calibration optimization failed: {e_cal}")
                             
         # 6. Report Calibration View & Save to SQLite
-        if "icrop2_calibration_best_params" in st.session_state:
+        if st.session_state.get("calibration_results", {}).get("has_run"):
+            st.success("🎉 Calibration Search Complete!")
             st.markdown("### 📊 Calibration Optimization Report")
-            best_params = st.session_state.icrop2_calibration_best_params
-            orig_rmse = st.session_state.icrop2_calibration_orig_rmse
-            best_rmse = st.session_state.icrop2_calibration_best_rmse
+            cal_res = st.session_state["calibration_results"]
+            best_params = cal_res["optimized_params"]
+            orig_rmse = cal_res["initial_rmse"]
+            best_rmse = cal_res["final_rmse"]
             
             c_type = "Maize"
             if "Sorghum" in st.session_state.get("icrop2_selected_crop_profile", "Maize"):
@@ -2650,7 +2667,7 @@ with col_right:
                             else:
                                 st.session_state["icrop2_selected_crop_profile"] = f"🔒 Private Custom: {new_cal_name.strip()} (Calibrated)"
                             
-                            del st.session_state.icrop2_calibration_best_params
+                            del st.session_state["calibration_results"]
                             st.rerun()
                         except Exception as e_save:
                             st.error(f"Failed to persist variety: {e_save}")
