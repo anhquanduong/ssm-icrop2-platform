@@ -768,13 +768,22 @@ with st.sidebar:
                         created_by_user = st.session_state.icrop2_user_id
                         
                         try:
-                            # Save directly to 'crops' table
+                            # Save directly to 'crops' table using SELECT + INSERT/UPDATE for cross-db compatibility
                             with db.get_connection() as conn:
                                 cursor = conn.cursor()
-                                cursor.execute("""
-                                    INSERT OR REPLACE INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter, is_public, created_by_user_id)
-                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                                """, (new_crop_name.strip(), "Custom", json.dumps(new_params), crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter, is_public_flag, created_by_user))
+                                cursor.execute("SELECT id FROM crops WHERE crop_name = ? AND cultivar = ?", (new_crop_name.strip(), "Custom"))
+                                existing = cursor.fetchone()
+                                if existing:
+                                    cursor.execute("""
+                                        UPDATE crops 
+                                        SET parameters_json = ?, crop_produce_type = ?, lifecycle_strategy = ?, t_dormancy_trigger = ?, t_base_winter = ?, is_public = ?, created_by_user_id = ?
+                                        WHERE id = ?
+                                    """, (json.dumps(new_params), crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter, is_public_flag, created_by_user, existing[0]))
+                                else:
+                                    cursor.execute("""
+                                        INSERT INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter, is_public, created_by_user_id)
+                                        VALUES (?, 'Custom', ?, ?, ?, ?, ?, ?, ?)
+                                    """, (new_crop_name.strip(), json.dumps(new_params), crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter, is_public_flag, created_by_user))
                                 conn.commit()
                                 
                             st.toast("✅ New Crop Profile Registered Successfully!")
@@ -870,13 +879,26 @@ with st.sidebar:
                     st.error("Please enter a valid profile name.")
                 else:
                     try:
-                        # Save directly to 'crops' table
+                        # Save directly to 'crops' table using SELECT + INSERT/UPDATE for cross-db compatibility
                         with db.get_connection() as conn:
                             cursor = conn.cursor()
-                            cursor.execute("""
-                                INSERT OR REPLACE INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter, is_public, created_by_user_id)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                            """, (new_profile_name.strip(), "Custom", json.dumps(active_profile), active_profile.get("crop_produce_type", "Fruit/Seed"), active_profile.get("lifecycle_strategy", "Annual (Single-Season)"), active_profile.get("t_dormancy_trigger", 5.0), active_profile.get("t_base_winter", 0.0), is_public_flag, created_by_user))
+                            cursor.execute("SELECT id FROM crops WHERE crop_name = ? AND cultivar = ?", (new_profile_name.strip(), "Custom"))
+                            existing = cursor.fetchone()
+                            prod_type = active_profile.get("crop_produce_type", "Fruit/Seed")
+                            l_strat = active_profile.get("lifecycle_strategy", "Annual (Single-Season)")
+                            t_dorm = active_profile.get("t_dormancy_trigger", 5.0)
+                            t_base = active_profile.get("t_base_winter", 0.0)
+                            if existing:
+                                cursor.execute("""
+                                    UPDATE crops 
+                                    SET parameters_json = ?, crop_produce_type = ?, lifecycle_strategy = ?, t_dormancy_trigger = ?, t_base_winter = ?, is_public = ?, created_by_user_id = ?
+                                    WHERE id = ?
+                                """, (json.dumps(active_profile), prod_type, l_strat, t_dorm, t_base, is_public_flag, created_by_user, existing[0]))
+                            else:
+                                cursor.execute("""
+                                    INSERT INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter, is_public, created_by_user_id)
+                                    VALUES (?, 'Custom', ?, ?, ?, ?, ?, ?, ?)
+                                """, (new_profile_name.strip(), json.dumps(active_profile), prod_type, l_strat, t_dorm, t_base, is_public_flag, created_by_user))
                             conn.commit()
                         
                         st.success(f"Successfully saved profile '{new_profile_name}'!")
@@ -2661,12 +2683,26 @@ with col_right:
                         created_by_user = st.session_state.icrop2_user_id
                         
                         try:
+                            # Save calibrated variety using SELECT + INSERT/UPDATE
                             with db.get_connection() as conn:
                                 cursor = conn.cursor()
-                                cursor.execute("""
-                                    INSERT OR REPLACE INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter, is_public, created_by_user_id)
-                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                                """, (new_cal_name.strip(), "Calibrated", json.dumps(new_params), new_params.get("crop_produce_type", "Fruit/Seed"), new_params.get("lifecycle_strategy", "Annual (Single-Season)"), new_params.get("t_dormancy_trigger", 5.0), new_params.get("t_base_winter", 0.0), is_pub, created_by_user))
+                                cursor.execute("SELECT id FROM crops WHERE crop_name = ? AND cultivar = ?", (new_cal_name.strip(), "Calibrated"))
+                                existing = cursor.fetchone()
+                                prod_type = new_params.get("crop_produce_type", "Fruit/Seed")
+                                l_strat = new_params.get("lifecycle_strategy", "Annual (Single-Season)")
+                                t_dorm = new_params.get("t_dormancy_trigger", 5.0)
+                                t_base = new_params.get("t_base_winter", 0.0)
+                                if existing:
+                                    cursor.execute("""
+                                        UPDATE crops 
+                                        SET parameters_json = ?, crop_produce_type = ?, lifecycle_strategy = ?, t_dormancy_trigger = ?, t_base_winter = ?, is_public = ?, created_by_user_id = ?
+                                        WHERE id = ?
+                                    """, (json.dumps(new_params), prod_type, l_strat, t_dorm, t_base, is_pub, created_by_user, existing[0]))
+                                else:
+                                    cursor.execute("""
+                                        INSERT INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter, is_public, created_by_user_id)
+                                        VALUES (?, 'Calibrated', ?, ?, ?, ?, ?, ?, ?)
+                                    """, (new_cal_name.strip(), json.dumps(new_params), prod_type, l_strat, t_dorm, t_base, is_pub, created_by_user))
                                 conn.commit()
                             st.success(f"🎉 Persisted custom calibrated cultivar '{new_cal_name}' successfully!")
                             
@@ -2773,10 +2809,19 @@ with col_right:
                         
                         with db.get_connection() as conn:
                             cursor = conn.cursor()
-                            cursor.execute("""
-                                INSERT OR REPLACE INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter, is_public)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, 1)
-                            """, (new_m_name.strip(), new_m_cultivar.strip(), json.dumps(m_params), "Fruit/Seed", "Annual (Single-Season)", 5.0, 0.0))
+                            cursor.execute("SELECT id FROM crops WHERE crop_name = ? AND cultivar = ?", (new_m_name.strip(), new_m_cultivar.strip()))
+                            existing = cursor.fetchone()
+                            if existing:
+                                cursor.execute("""
+                                    UPDATE crops 
+                                    SET parameters_json = ?, crop_produce_type = ?, lifecycle_strategy = ?, t_dormancy_trigger = ?, t_base_winter = ?, is_public = 1
+                                    WHERE id = ?
+                                """, (json.dumps(m_params), "Fruit/Seed", "Annual (Single-Season)", 5.0, 0.0, existing[0]))
+                            else:
+                                cursor.execute("""
+                                    INSERT INTO crops (crop_name, cultivar, parameters_json, crop_produce_type, lifecycle_strategy, t_dormancy_trigger, t_base_winter, is_public)
+                                    VALUES (?, ?, ?, 'Fruit/Seed', 'Annual (Single-Season)', 5.0, 0.0, 1)
+                                """, (new_m_name.strip(), new_m_cultivar.strip(), json.dumps(m_params)))
                             conn.commit()
                         st.success(f"🎉 Registered new master crop variety '{new_m_name} ({new_m_cultivar})'!")
                         st.rerun()
