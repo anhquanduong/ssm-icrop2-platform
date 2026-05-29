@@ -348,9 +348,7 @@ class SSMiCropEngine:
         flf2 = cp["FLF2"]
         frtrl = cp["FRTRL"]
         gcc = cp["GCC"]
-        pdhi = cp["PDHI"]           # Daily HI increment rate (g/g/day) — NOT an absolute cap
-        # True biological maximum HI ceiling for the crop type
-        # Maize: ~0.55; Sorghum: ~0.50 (from literature and reference output HI=0.525)
+        pdhi = cp["PDHI"]           # Daily HI increment rate (g/g/day)
         hi_ceiling = 0.55 if crop_type == "Maize" else 0.52
         wdhi1 = cp["WDHI1"]
         wdhi2 = cp["WDHI2"]
@@ -445,6 +443,7 @@ class SSMiCropEngine:
         
         wlf = 0.5
         wst = 0.5
+        wroot = 0.2  # Physical Root Biomass Pool Initialized
         wveg = wlf + wst
         wgrn = 0.0
         wtop = wlf + wst
@@ -546,6 +545,7 @@ class SSMiCropEngine:
                     ant_lai = 0.0
                     wlf = 0.5
                     wst = 0.5
+                    wroot = 0.2  # Dynamic root physical pool initialized
                     wveg = wlf + wst
                     wgrn = 0.0
                     wtop = wlf + wst
@@ -583,6 +583,7 @@ class SSMiCropEngine:
                         dlai = 0.0
                         wlf = 0.0
                         wst = 0.0
+                        wroot = 0.0
                         wveg = 0.0
                         wgrn = 0.0
                         wtop = 0.0
@@ -625,90 +626,6 @@ class SSMiCropEngine:
             
             active_tbd = t_base_winter if in_dormancy else tbd
             
-            # Initialize Nitrogen variables for the day
-            SNAVL = self.current_soil_n
-            Daily_Crop_Nitrogen_Uptake = 0.0
-            N_Leached_Daily = 0.0
-            
-            if self.mode == "Advanced":
-                # --- 2. THE DAILY SOIL WATER BALANCE LOOP ---
-                # Extract daily scheduled irrigation amount (mm) for this DOY
-                irr_today = 0.0
-                if self.water_management and "irrigation" in self.water_management:
-                    for irr in self.water_management["irrigation"]:
-                        if int(irr.get("doy", 0)) == doy:
-                            irr_today += float(irr.get("water_applied_mm", 0.0))
-                
-                # Extract daily scheduled drainage capacity (mm/day) active for this DOY
-                drn_today = 0.0
-                if self.water_management and "drainage" in self.water_management:
-                    for drn in self.water_management["drainage"]:
-                        if doy >= int(drn.get("start_doy", 0)):
-                            drn_today += float(drn.get("release_rate_mm_day", 0.0))
-                
-                # Estimate potential evapotranspiration (PET) for the daily balance
-                td_temp = 0.6 * tmax + 0.4 * tmin
-                eeq_est = srad * (0.004876 - 0.004374 * 0.23) * (td_temp + 29.0)
-                pet_est = eeq_est * 1.1
-                if tmax > 34.0:
-                    pet_est = eeq_est * ((tmax - 34.0) * 0.05 + 1.1)
-                elif tmax < 5.0:
-                    pet_est = eeq_est * 0.01 * np.exp(0.18 * (tmax + 20.0))
-                pet_est = max(0.0, pet_est)
-                
-                # Apply daily water budget balance
-                water_in = rain + irr_today
-                water_out = pet_est + drn_today
-                self.current_soil_water = self.current_soil_water + water_in - water_out
-                self.current_soil_water = max(0.0, self.current_soil_water)
-                
-                # Saturation capping / runoff trigger
-                excess_water = 0.0
-                if self.current_soil_water > self.total_storage_capacity:
-                    excess_water = self.current_soil_water - self.total_storage_capacity
-                    self.current_soil_water = self.total_storage_capacity
-                
-                # --- 3. CALCULATE WATER STRESS MULTIPLIERS (F_water) ---
-                ftsw = self.current_soil_water / self.total_storage_capacity if self.total_storage_capacity > 0.0 else 0.0
-                ftsw = np.clip(ftsw, 0.0, 1.0)
-                
-                if use_moisture:
-                    if ftsw < 0.3:
-                        # Deficit / Drought penalty drops linearly to 0
-                        f_water = ftsw / 0.3
-                    elif ftsw > 0.95:
-                        # Waterlogging oxygen-deficit penalty drops linearly to 0 at complete saturation
-                        f_water = (1.0 - ftsw) / 0.05
-                    else:
-                        f_water = 1.0
-                    f_water = np.clip(f_water, 0.0, 1.0)
-                else:
-                    f_water = 1.0
-
-                # --- 4. IMPLEMENT LITE NITROGEN AVAILABILITY MODEL (F_nutr) ---
-                NFERT = 0.0
-                if self.fertilizer_schedule:
-                    for fert in self.fertilizer_schedule:
-                        if int(fert.get("doy", 0)) == doy:
-                            NFERT += float(fert.get("nitrogen_kg_ha", 0.0))
-                
-                SNAVL += NFERT
-                self.current_soil_n = SNAVL
-            else:
-                f_water = 1.0
-                f_nutr = 1.0
-                fts_wrz = 1.0
-                wsfl = 1.0
-                wsfg = 1.0
-                wsfd = 1.0
-                wsxf = 1.0
-                irgw = 0.0
-                drain = 0.0
-                runof = 0.0
-                pet = 0.0
-                sevp = 0.0
-                tr = 0.0
-            
             # --- Phenology Module ---
             if in_dormancy:
                 temp_stress = 0.0
@@ -717,8 +634,6 @@ class SSMiCropEngine:
                 pp = self.calculate_photoperiod(doy)
             else:
                 temp_stress = self.calculate_stress_factor(tmp, active_tbd, tp1d, tp2d, tcd)
-                
-                # Daylength photoperiod calculations
                 pp = self.calculate_photoperiod(doy)
                 
                 if bd_brp <= cbd <= bd_trp:
@@ -736,9 +651,9 @@ class SSMiCropEngine:
                 if cbd > bd_bsg:
                     dtu = dtu * wsfd
                     
-                # Biological day increment
+                # Biological day increment (Multiplicative photoperiod-temperature in iCrop1)
                 if bd_brp <= cbd <= bd_trp:
-                    bd_inc = pp_stress
+                    bd_inc = temp_stress * pp_stress
                 else:
                     bd_inc = temp_stress
                     
@@ -779,23 +694,15 @@ class SSMiCropEngine:
             if cbd > bd_mat:
                 mat_flag = 1
                 
-            # --- Canopy Module ---
-            lai = lai + glai - dlai
-            lai = max(0.0, lai)
-            if lai > mxlai:
-                mxlai = lai
-                
-            # Default values (preserving standard baseline continuity)
+            # --- Vapor Pressure Deficit & Potential Transpiration Demand Setup ---
             f_vpd_rue = 1.0
             wssl_day = wssl
             wssg_day = wssg
             
-            # VPD calculations
             vpt_min = 0.6108 * np.exp(17.27 * tmin / (tmin + 237.3))
             vpt_max = 0.6108 * np.exp(17.27 * tmax / (tmax + 237.3))
             e_s = 0.5 * (vpt_max + vpt_min)
             
-            # Determine actual vapor pressure e_a
             if "RH" in row_wth:
                 rh = float(row_wth["RH"])
                 e_a = e_s * (rh / 100.0)
@@ -803,47 +710,234 @@ class SSMiCropEngine:
                 tdew = float(row_wth["TDEW"])
                 e_a = 0.6108 * np.exp(17.27 * tdew / (tdew + 237.3))
             else:
-                e_a = vpt_min  # Dew Point approximation (RHmax = 100%)
+                e_a = vpt_min  # Dew Point approximation
                 
             vpd_calc = max(0.0, e_s - e_a)
             
             if self.mode == "Advanced" and self.advanced_options.get("use_vpd", False):
                 if vpd_calc > 1.5:
-                    # Decrease RUE: 15% reduction per kPa above 1.5, capped at 50% max penalty
                     f_vpd_rue = np.clip(1.0 - 0.15 * (vpd_calc - 1.5), 0.5, 1.0)
-                    # Increase critical FTSW thresholds linearly by 0.1 per kPa above 1.5, capped at 0.8
                     wssl_day = np.clip(wssl + 0.1 * (vpd_calc - 1.5), wssl, 0.8)
                     wssg_day = np.clip(wssg + 0.1 * (vpd_calc - 1.5), wssg, 0.8)
 
-            # Estimate potential RUE for N Demand
+            # --- Estimate Potential dry matter and Nitrogen stresses ---
             rue_temp_factor = self.calculate_stress_factor(tmp, tbrue, tp1rue, tp2rue, tcrue)
             rue = irue * rue_temp_factor * f_vpd_rue
             fint = 1.0 - np.exp(-kpar * lai)
             
+            SNAVL = self.current_soil_n
+            Daily_Crop_Nitrogen_Uptake = 0.0
+            N_Leached_Daily = 0.0
+            
+            if self.mode == "Advanced":
+                NFERT = 0.0
+                if self.fertilizer_schedule:
+                    for fert in self.fertilizer_schedule:
+                        if int(fert.get("doy", 0)) == doy:
+                            NFERT += float(fert.get("nitrogen_kg_ha", 0.0))
+                SNAVL += NFERT
+
+            # Potential shoot biomass for N Demand and potential transpiration
+            ddmp_pot = srad * 0.48 * fint * rue * temp_stress
+            
             if self.mode == "Advanced" and use_nitrogen:
-                # Calculate daily potential biomass growth for N Demand estimation
-                ddmp_pot = srad * 0.48 * fint * rue * temp_stress
-                
-                # Compute Nitrogen demand (1.8% critical tissue concentration, 1 g/m² = 10 kg/ha)
                 n_demand = (ddmp_pot * 10.0) * 0.018
-                
                 if n_demand > 0.0:
-                    if SNAVL >= n_demand:
-                        f_nutr = 1.0
-                        Daily_Crop_Nitrogen_Uptake = n_demand
-                    else:
-                        # Nutrient deficit penalizes growth
-                        f_nutr = SNAVL / n_demand
-                        Daily_Crop_Nitrogen_Uptake = SNAVL
+                    Daily_Crop_Nitrogen_Uptake = min(SNAVL, n_demand)
+                    f_nutr = Daily_Crop_Nitrogen_Uptake / n_demand
                 else:
                     f_nutr = 1.0
                 f_nutr = np.clip(f_nutr, 0.1, 1.0)
-                SNAVL -= Daily_Crop_Nitrogen_Uptake
-                self.current_soil_n = SNAVL
             else:
                 f_nutr = 1.0
+
+            # --- Rigorous Tipping-Bucket Multilayer Hydrology Model ---
+            if self.mode == "Advanced":
+                irgw = 0.0
+                
+                # Auto irrigation logic using target root zone capacities
+                if self.water_management.get("auto_irrigation", False):
+                    if fts_wrz <= 0.5 and cbd < bd_tsg:
+                        target_fc = np.sum(wlul * (rlyer / dlyer))
+                        current_fc = np.sum(wl * (rlyer / dlyer))
+                        irgw = max(0.0, target_fc - current_fc)
+                        irg_no += 1
+                
+                # Fetch scheduled irrigation/drainage for water balance inputs
+                irr_today = 0.0
+                if self.water_management and "irrigation" in self.water_management:
+                    for irr in self.water_management["irrigation"]:
+                        if int(irr.get("doy", 0)) == doy:
+                            irr_today += float(irr.get("water_applied_mm", 0.0))
+                
+                drn_today = 0.0
+                if self.water_management and "drainage" in self.water_management:
+                    for drn in self.water_management["drainage"]:
+                        if doy >= int(drn.get("start_doy", 0)):
+                            drn_today += float(drn.get("release_rate_mm_day", 0.0))
+                
+                crain += rain
+                cirgw += irgw
+                
+                # 1. Runoff using SCS Curve Number
+                runof = 0.0
+                if rain > 0.01:
+                    s_coeff = 254.0 * (100.0 / cn - 1.0)
+                    swer = 0.15 * (((wlst[0] - wl[0]) / (wlst[0] - wlll[0])) * 0.5 + ((wlst[1] - wl[1]) / (wlst[1] - wlll[1])) * 0.5)
+                    swer = max(0.0, swer)
+                    if rain - swer * s_coeff > 0.0:
+                         runof = ((rain - swer * s_coeff) ** 2) / (rain + (1.0 - swer) * s_coeff)
+                crunof += runof
+                
+                # 2. Potential Evapotranspiration
+                td_temp = 0.6 * tmax + 0.4 * tmin
+                et_lai = lai if cbd <= bd_bsg else bsg_lai
+                albedo = salb * np.exp(-kpar * et_lai) + 0.23 * (1.0 - np.exp(-kpar * et_lai))
+                eeq = srad * (0.004876 - 0.004374 * albedo) * (td_temp + 29.0)
+                pet = eeq * 1.1
+                if tmax > 34.0:
+                    pet = eeq * ((tmax - 34.0) * 0.05 + 1.1)
+                elif tmax < 5.0:
+                    pet = eeq * 0.01 * np.exp(0.18 * (tmax + 20.0))
+                pet = max(0.0, pet)
+                
+                # 3. Soil Evaporation
+                eos = pet * np.exp(-kpar * et_lai)
+                eos = max(1.5, eos) if pet > 1.5 else eos
+                sevp = eos
+                if rain + irgw > 10.0:
+                    dyse = 1
+                if dyse > 1 or fts_wrz < 0.5 or ats_water[0] <= 1.0:
+                    sevp = eos * ((dyse + 1.0) ** 0.5 - (dyse) ** 0.5)
+                    dyse += 1
+                ce += sevp
+                
+                # 4. Plant Transpiration Demand based on Potential biomass
+                vpd_scaled = vpdf * (vpt_max - vpt_min)
+                tr = ddmp_pot * vpd_scaled / tec
+                tr = max(0.0, tr)
+                ctr += tr
+                
+                # 5. Extract Transpiration and Evaporation Layer-by-Layer
+                aroot = np.sum(rlyer * rt)
+                wuur = tr / (aroot + 1e-7)
+                tse = sevp
+                
+                for l in range(nlayer):
+                    wu[l] = rlyer[l] * rt[l] * wuur
+                    se[l] = tse
+                    se_limit = (wl[l] - wlad[l]) * drainf[l]
+                    se[l] = min(se[l], max(0.0, se_limit))
+                    if wl[l] <= wlad[l]:
+                        se[l] = 0.0
+                    tse = max(0.0, tse - se[l])
+                    
+                # 6. Cascading Gravitational Drainage
+                for l in range(nlayer):
+                    flin_l = rain + irgw + irr_today - runof if l == 0 else flout[l-1]
+                    wl[l] = wl[l] + flin_l - wu[l] - se[l]
+                    tbt_val = cp.get("tbt", 1.0)
+                    drainage_threshold_l = wlul[l] * tbt_val
+                    flout[l] = max(0.0, (wl[l] - drainage_threshold_l) * drainf[l])
+                    wl[l] = wl[l] - flout[l]
+                    
+                    ats_water[l] = max(0.0, wl[l] - wlll[l])
+                    ttsw_l = wlul[l] - wlll[l]
+                    fts_l = ats_water[l] / ttsw_l if ttsw_l > 0.0 else 0.0
+                    rt[l] = 1.0 if fts_l > wssg_day else max(0.0, fts_l / wssg_day)
+                    
+                # 7. Drainage and nitrogen leaching calculations
+                drain = flout[ldrain]
+                cdrain += drain
+                if self.advanced_options.get("use_leaching", False) and drain > 0.0:
+                    safe_soil_water = max(wl[ldrain], 0.001)
+                    leaching_fraction = np.clip(drain / safe_soil_water, 0.0, 0.75)
+                    leaching_efficiency = cp.get("leach_eff", self.advanced_options.get("leaching_efficiency", 0.8))
+                    N_Leached_Daily = min(SNAVL * leaching_fraction * leaching_efficiency, max(0.0, SNAVL))
+                
+                SNAVL = max(0.0, SNAVL - Daily_Crop_Nitrogen_Uptake - N_Leached_Daily)
+                self.current_soil_n = SNAVL
+                
+                # 8. Root Zone Depth Propagation
+                if self.advanced_options.get("use_root_growth", False):
+                    if cbd >= bd_emr:
+                        if cbd <= bd_sil:
+                            grtdp_dd = grtdp / (tp1d - tbd)
+                            deport = min(ideport + (grtdp_dd * cum_dtu_emergence), meed)
+                else:
+                    grtd = grtdp * bd_inc
+                    if cbd < bd_emr or cbd > bd_bsg or ddmp_pot == 0.0 or deport >= total_depth or deport >= meed:
+                        grtd = 0.0
+                    rtl_index = int(np.clip(deport // dlyer[0], 0, nlayer-1))
+                    if ats_water[rtl_index] == 0.0:
+                        grtd = 0.0
+                    deport += grtd
+
+                # Dynamic Soil Water Capacity Sizing & Root Distribution
+                if self.advanced_options.get("use_root_growth", False):
+                    self.total_storage_capacity = max(1.0, deport * (self.pawc / 1000.0))
+                
+                dp_top = 0.0
+                for l in range(nlayer):
+                    rlyer[l] = np.clip(deport - dp_top, 0.0, dlyer[l])
+                    dp_top += dlyer[l]
+                    
+                # 9. Integrated Root Zone FTSW and stresses computation
+                wrz = np.sum(wl * (rlyer / dlyer))
+                wrzul = np.sum(wlul * (rlyer / dlyer))
+                wrzst = np.sum(wlst * (rlyer / dlyer))
+                ats_wrz = np.sum(ats_water * (rlyer / dlyer))
+                tts_wrz = np.sum((wlul - wlll) * (rlyer / dlyer))
+                
+                fts_wrz = ats_wrz / tts_wrz if tts_wrz > 0.0 else 0.0
+                
+                if use_moisture:
+                    wsfl = 1.0 if fts_wrz > wssl_day else max(0.0, fts_wrz / wssl_day)
+                    wsfg = 1.0 if fts_wrz > wssg_day else max(0.0, fts_wrz / wssg_day)
+                    wsfd = (1.0 - wsfg) * wssd + 1.0
+                    wsxf = 1.0 if wrz <= wrzul else max(0.0, (wrzst - wrz) / (wrzst - wrzul))
+                    
+                    # Flooding check
+                    if wrz > 0.95 * wrzst:
+                        wsfg = 0.0
+                        wsfl = 0.0
+                        fldur += 1
+                    else:
+                        fldur = 0
+                    if fldur > fldkil:
+                        cbd = bd_tsg
+                else:
+                    wsfl = 1.0
+                    wsfg = 1.0
+                    wsfd = 1.0
+                    wsxf = 1.0
+                    fldur = 0
+                    
+                self.current_soil_water = ats_wrz
+                self.total_storage_capacity = max(1.0, tts_wrz)
+            else:
+                irgw = 0.0
+                drain = 0.0
+                runof = 0.0
+                pet = 0.0
+                sevp = 0.0
+                tr = 0.0
+                fts_wrz = 1.0
+                wsfl = 1.0
+                wsfg = 1.0
+                wsfd = 1.0
+                wsxf = 1.0
+                # Propagate root depth normally
+                grtd = grtdp * bd_inc
+                if cbd < bd_emr or cbd > bd_bsg or ddmp_pot == 0.0 or deport >= total_depth or deport >= meed:
+                    grtd = 0.0
+                deport += grtd
+
+            # Define unified biophysical growth stress (replaces f_water shortcut)
+            f_water = wsfg
+            growth_stress = min(wsfg, f_nutr)
             
-            # Canopy Expansion (LAI is penalized by both Water stress and N stress)
+            # --- Canopy Module Expansion ---
             if in_dormancy:
                 glai = 0.0
                 dlai = 0.0
@@ -868,7 +962,7 @@ class SSMiCropEngine:
             if cbd <= bd_sil:
                 ant_lai = lai
                 
-            # Frost Damage check on Canopy (extreme thermal stress)
+            # Frost Damage check on Canopy
             dlai_f = 0.0
             if self.mode == "Advanced":
                 if cbd > bd_emr and tmin < tkill:
@@ -876,64 +970,73 @@ class SSMiCropEngine:
                     dlai_f = lai * frost_factor
             dlai = max(dlai, dlai_f)
             
-            # --- 5. DAILY BIOMASS PRODUCTION (Beer-Lambert PAR Interception) ---
-            # Eq: PAR_intercepted = SRAD × (1 - exp(-KPAR × LAI))
-            # Note: fint = 1 - exp(-kpar * lai) is already computed above.
-            # RUE converts intercepted PAR (MJ/m²) to dry matter (g/m²).
-            # The 0.48 factor converts total SRAD to PAR (photosynthetically
-            # active radiation band). growth_stress applies combined water+N penalty.
-            growth_stress = min(f_water, f_nutr)
-            par_intercepted = srad * 0.48 * fint          # MJ PAR intercepted per m² per day
-            ddmp = par_intercepted * rue * growth_stress   # g DM / m² / day
+            lai = max(0.0, lai + glai - dlai)
+            if lai > mxlai:
+                mxlai = lai
+
+            # --- 5. DAILY BIOMASS PRODUCTION & PARTITIONING (iCrop1 Rigorous Formulas) ---
+            par_intercepted = srad * 0.48 * fint
+            ddmp_total = par_intercepted * rue * growth_stress   # Total daily photosynthate
             
-            # --- Yield Partitioning Module ---
             glf = 0.0
             gst = 0.0
             sgr = 0.0
             transl = 0.0
             
             if cbd <= bd_emr or cbd > bd_tsg or in_dormancy:
+                ddmp_total = 0.0
                 ddmp = 0.0
-            elif bd_emr < cbd <= bd_tlm:
-                flf1 = flf1a if wtop < wtopl else flf1b
-                glf = flf1 * ddmp
-                gst = ddmp - glf
-            elif bd_tlm < cbd < bd_bsg:
-                glf = flf2 * ddmp
-                gst = ddmp - glf
-                bsg_dm = wtop
-                
-                # Dynamic Harvest Index potential calculation based on stress biomass
-                if bsg_dm <= wdhi1 or bsg_dm >= wdhi4:
-                    dhif = 0.0
-                elif wdhi1 < bsg_dm < wdhi2:
-                    dhif = (bsg_dm - wdhi1) / (wdhi2 - wdhi1)
-                elif wdhi3 < bsg_dm < wdhi4:
-                    dhif = (wdhi4 - bsg_dm) / (wdhi4 - wdhi3)
+            else:
+                # Dynamic root system carbon allocation fraction (froot)
+                if bd_emr < cbd <= bd_sil:
+                    froot = max(0.05, 0.25 * (1.0 - (cbd - bd_emr) / (bd_sil - bd_emr)))
                 else:
-                    dhif = 1.0
-                dhi = pdhi * dhif
-                trldm = bsg_dm * frtrl
-                
-            elif bd_bsg <= cbd <= bd_tsg:
-                sgr = dhi * (wtop + ddmp) + ddmp * hi
-                
-                # Apply pollination heat shock sterility reduction to daily grain allocation
-                if self.mode == "Advanced" and self.advanced_options.get("use_heat_shock", False):
-                    sgr = sgr * (1.0 - pollen_sterility)
-                
-                if (sgr / gcc) > ddmp:
-                    transl = (sgr / gcc) - ddmp
-                    transl = min(transl, trldm)
-                
-                trldm -= transl
-                sgr_limit = (ddmp + transl) * gcc
-                if sgr > sgr_limit:
-                    sgr = sgr_limit
+                    froot = 0.05 if cbd <= bd_tsg else 0.0
                     
-                if (sgr / gcc) < ddmp:
-                    gst = ddmp - (sgr / gcc)
+                # Allocate carbon to root physical pool
+                d_wroot = froot * ddmp_total
+                wroot += d_wroot
+                
+                # Shoots dry matter production (remaining fraction allocated to AGB)
+                ddmp = (1.0 - froot) * ddmp_total
+                
+                # Aboveground dry matter shoot partitioning
+                if bd_emr < cbd <= bd_tlm:
+                    flf1 = flf1a if wtop < wtopl else flf1b
+                    glf = flf1 * ddmp
+                    gst = ddmp - glf
+                elif bd_tlm < cbd < bd_bsg:
+                    glf = flf2 * ddmp
+                    gst = ddmp - glf
+                    bsg_dm = wtop
                     
+                    if bsg_dm <= wdhi1 or bsg_dm >= wdhi4:
+                        dhif = 0.0
+                    elif wdhi1 < bsg_dm < wdhi2:
+                        dhif = (bsg_dm - wdhi1) / (wdhi2 - wdhi1)
+                    elif wdhi3 < bsg_dm < wdhi4:
+                        dhif = (wdhi4 - bsg_dm) / (wdhi4 - wdhi3)
+                    else:
+                        dhif = 1.0
+                    dhi = pdhi * dhif
+                    trldm = bsg_dm * frtrl
+                elif bd_bsg <= cbd <= bd_tsg:
+                    sgr = dhi * (wtop + ddmp) + ddmp * hi
+                    if self.mode == "Advanced" and self.advanced_options.get("use_heat_shock", False):
+                        sgr = sgr * (1.0 - pollen_sterility)
+                    
+                    if (sgr / gcc) > ddmp:
+                        transl = (sgr / gcc) - ddmp
+                        transl = min(transl, trldm)
+                    
+                    trldm -= transl
+                    sgr_limit = (ddmp + transl) * gcc
+                    if sgr > sgr_limit:
+                        sgr = sgr_limit
+                        
+                    if (sgr / gcc) < ddmp:
+                        gst = ddmp - (sgr / gcc)
+            
             wlf += glf
             wst += gst
             wgrn += sgr
@@ -945,230 +1048,30 @@ class SSMiCropEngine:
             if lifecycle_strategy == "Cyclical Perennial":
                 wwood += 0.2 * gst
 
-            # ---------------------------------------------------------------
-            # MASS CONSERVATION — pool totals recalculated every time step.
-            # Key: translocation (transl) moves mass FROM wst TO wgrn,
-            # so wst was already reduced by transl inside the yield block.
-            # wveg = leaf + stem (structural); wtop = veg + grain (total AGB).
-            # ---------------------------------------------------------------
+            # Mass conservation pools recalculation
             wveg = wlf + wst
             wtop = wveg + wgrn
-
-            # Running Harvest Index = current grain fraction of total biomass.
-            # Use a running ratio (not the daily-increment pdhi) for display.
-            # pdhi (0.015 g/g/day) is a SINK RATE parameter, not an HI ceiling.
+            
             if wtop > 0.0:
                 hi = wgrn / wtop
-                # Apply hard biological ceiling (Maize ~0.55, Sorghum ~0.52).
-                # If somehow exceeded, trim grain to conserve mass.
                 if hi > hi_ceiling:
                     wgrn = hi_ceiling * wtop
                     hi = hi_ceiling
             else:
                 hi = 0.0
-            # --- Soil Hydrology Module ---
-            if self.mode == "Advanced":
-                irgw = 0.0
-                
-                # Only run automatic irrigation if explicitly requested in water_management
-                if self.water_management.get("auto_irrigation", False):
-                    # Target field capacity represents full root zone capacity
-                    if fts_wrz <= 0.5 and cbd < bd_tsg:
-                        # Root zone water capacity deficit
-                        target_fc = np.sum(wlul * (rlyer / dlyer))
-                        current_fc = np.sum(wl * (rlyer / dlyer))
-                        irgw = max(0.0, target_fc - current_fc)
-                        irg_no += 1
-                
-                crain += rain
-                cirgw += irgw
-                
-                # Drainage calculation (cascading bottom flux)
-                drain = flout[ldrain]
-                cdrain += drain
-                
-                # Nitrogen Leaching sub-model
-                N_Leached_Daily = 0.0
-                if self.advanced_options.get("use_leaching", False) and drain > 0.0:
-                    # Calculate deep drainage (drain)
-                    # Total_Soil_Water_Content is the total water content of the bottom drainage layer (wl[ldrain])
-                    safe_soil_water = max(wl[ldrain], 0.001)
-                    leaching_fraction = drain / safe_soil_water
-                    
-                    # Clamp the leaching_fraction explicitly so it can never mathematically exceed 100% of the available solution pool (capped at 0.75)
-                    leaching_fraction = max(0.0, min(leaching_fraction, 0.75))
-                    
-                    # Calculate actual mass leached
-                    leaching_efficiency = cp.get("leach_eff", self.advanced_options.get("leaching_efficiency", 0.8))
-                    N_Leached_Daily = min(SNAVL * leaching_fraction * leaching_efficiency, max(0.0, SNAVL))
-                    
-                    # Update available soil mineral nitrogen pool
-                    SNAVL -= N_Leached_Daily
-                
-                SNAVL = max(0.0, SNAVL)
-                self.current_soil_n = SNAVL
-                
-                # Root depth propagation
-                if self.advanced_options.get("use_root_growth", False):
-                    # Grow roots strictly based on accumulated degree days since emergence until flowering
-                    if cbd >= bd_emr:
-                        if cbd <= bd_sil:
-                            grtdp_dd = grtdp / (tp1d - tbd)
-                            deport = min(ideport + (grtdp_dd * cum_dtu_emergence), meed)
-                        else:
-                            # Growth halts after flowering, deport remains constant
-                            pass
-                else:
-                    grtd = grtdp * bd_inc
-                    if cbd < bd_emr or cbd > bd_bsg or ddmp == 0.0 or deport >= total_depth or deport >= meed:
-                        grtd = 0.0
-                    # Root growth halts in completely dry soil
-                    rtl_index = int(np.clip(deport // dlyer[0], 0, nlayer-1))
-                    if ats_water[rtl_index] == 0.0:
-                        grtd = 0.0
-                    deport += grtd
 
-                # Dynamic Soil Water Capacity Sizing
-                if self.advanced_options.get("use_root_growth", False):
-                    self.total_storage_capacity = max(1.0, deport * (self.pawc / 1000.0))
-                    # Cap soil water tracker at expanding storage capacity
-                    self.current_soil_water = min(self.current_soil_water, self.total_storage_capacity)
+            # Reset cyclical perennial grain pool at the end of the year's daily loop if mature
+            is_last_day_of_year = False
+            if step == total_steps - 1 or self.weather_df.iloc[step]["YEAR"] != self.weather_df.iloc[step + 1]["YEAR"]:
+                is_last_day_of_year = True
                 
-                # Distribute roots across soil layers
-                dp_top = 0.0
-                for l in range(nlayer):
-                    rlyer[l] = deport - dp_top
-                    rlyer[l] = np.clip(rlyer[l], 0.0, dlyer[l])
-                    dp_top += dlyer[l]
-                    
-                # Runoff using SCS Curve Number method
-                runof = 0.0
-                if rain > 0.01:
-                    s_coeff = 254.0 * (100.0 / cn - 1.0)
-                    # Moisture-adjusted curve coefficient
-                    swer = 0.15 * (((wlst[0] - wl[0]) / (wlst[0] - wlll[0])) * 0.5 + ((wlst[1] - wl[1]) / (wlst[1] - wlll[1])) * 0.5)
-                    swer = max(0.0, swer)
-                    if rain - swer * s_coeff > 0.0:
-                         runof = ((rain - swer * s_coeff) ** 2) / (rain + (1.0 - swer) * s_coeff)
-                crunof += runof
-                
-                # Evapotranspiration dynamics
-                td_temp = 0.6 * tmax + 0.4 * tmin
-                et_lai = lai if cbd <= bd_bsg else bsg_lai
-                
-                albedo = salb * np.exp(-kpar * et_lai) + 0.23 * (1.0 - np.exp(-kpar * et_lai))
-                eeq = srad * (0.004876 - 0.004374 * albedo) * (td_temp + 29.0)
-                pet = eeq * 1.1
-                if tmax > 34.0:
-                    pet = eeq * ((tmax - 34.0) * 0.05 + 1.1)
-                elif tmax < 5.0:
-                    pet = eeq * 0.01 * np.exp(0.18 * (tmax + 20.0))
-                    
-                # Soil Evaporation
-                eos = pet * np.exp(-kpar * et_lai)
-                eos = max(1.5, eos) if pet > 1.5 else eos
-                
-                sevp = eos
-                if rain + irgw > 10.0:
-                    dyse = 1
-                if dyse > 1 or fts_wrz < 0.5 or ats_water[0] <= 1.0:
-                    sevp = eos * ((dyse + 1.0) ** 0.5 - (dyse) ** 0.5)
-                    dyse += 1
-                ce += sevp
-                
-                # Plant Transpiration
-                vpt_min = 0.6108 * np.exp(17.27 * tmin / (tmin + 237.3))
-                vpt_max = 0.6108 * np.exp(17.27 * tmax / (tmax + 237.3))
-                vpd = vpdf * (vpt_max - vpt_min)
-                tr = ddmp * vpd / tec  # TEC in Pa, VPD in kPa
-                tr = max(0.0, tr)
-                ctr += tr
-                
-                # Update Layer Water Deficits & Cascading Redistribution
-                aroot = np.sum(rlyer * rt)
-                wuur = tr / (aroot + 1e-7)
-                tse = sevp
-                
-                for l in range(nlayer):
-                    wu[l] = rlyer[l] * rt[l] * wuur
-                    se[l] = tse
-                    se_limit = (wl[l] - wlad[l]) * drainf[l]
-                    se[l] = min(se[l], max(0.0, se_limit))
-                    if wl[l] <= wlad[l]:
-                        se[l] = 0.0
-                    tse = max(0.0, tse - se[l])
-                    
-                # Redistribute layer by layer (gravity cascading drainage)
-                for l in range(nlayer):
-                    flin_l = rain + irgw + irr_today - runof if l == 0 else flout[l-1]
-                    wl[l] = wl[l] + flin_l - wu[l] - se[l]
-                    tbt_val = cp.get("tbt", 1.0)
-                    drainage_threshold_l = wlul[l] * tbt_val
-                    flout[l] = max(0.0, (wl[l] - drainage_threshold_l) * drainf[l])
-                    wl[l] = wl[l] - flout[l]
-                    
-                    ats_water[l] = max(0.0, wl[l] - wlll[l])
-                    ttsw_l = wlul[l] - wlll[l]
-                    fts_l = ats_water[l] / ttsw_l if ttsw_l > 0.0 else 0.0
-                    rt[l] = 1.0 if fts_l > wssg_day else max(0.0, fts_l / wssg_day)
-                    
-                # Calculate overall Root Zone Water Stresses
-                wrz = np.sum(wl * (rlyer / dlyer))
-                wrzul = np.sum(wlul * (rlyer / dlyer))
-                wrzst = np.sum(wlst * (rlyer / dlyer))
-                ats_wrz = np.sum(ats_water * (rlyer / dlyer))
-                tts_wrz = np.sum((wlul - wlll) * (rlyer / dlyer))
-                
-                fts_wrz = ats_wrz / tts_wrz if tts_wrz > 0.0 else 0.0
-                
-                # Stresses computation
-                if use_moisture:
-                    wsfl = 1.0 if fts_wrz > wssl_day else max(0.0, fts_wrz / wssl_day)
-                    wsfg = 1.0 if fts_wrz > wssg_day else max(0.0, fts_wrz / wssg_day)
-                    wsfd = (1.0 - wsfg) * wssd + 1.0
-                    wsxf = 1.0 if wrz <= wrzul else max(0.0, (wrzst - wrz) / (wrzst - wrzul))
-                    
-                    # Flooding Stress Check
-                    if wrz > 0.95 * wrzst:
-                        wsfg = 0.0
-                        wsfl = 0.0
-                        fldur += 1
-                    else:
-                        fldur = 0
-                        
-                    if fldur > fldkil:
-                        cbd = bd_tsg  # Abort growth loop / accelerate senescence
-                else:
-                    wsfl = 1.0
-                    wsfg = 1.0
-                    wsfd = 1.0
-                    wsxf = 1.0
-                    fldur = 0
-                    
-                # Synchronize single-layer trackers with physical 5-layer root zone water capacities
-                self.current_soil_water = ats_wrz
-                self.total_storage_capacity = max(1.0, tts_wrz)
-            else:
-                irgw = 0.0
-                drain = 0.0
-                runof = 0.0
-                pet = 0.0
-                sevp = 0.0
-                tr = 0.0
-                fts_wrz = 1.0
-                wsfl = 1.0
-                wsfg = 1.0
-                wsfd = 1.0
-                wsxf = 1.0
-                # Propagate root depth normally
-                grtd = grtdp * bd_inc
-                if cbd < bd_emr or cbd > bd_bsg or ddmp == 0.0 or deport >= total_depth or deport >= meed:
-                    grtd = 0.0
-                deport += grtd
-                
+            if is_last_day_of_year:
+                if lifecycle_strategy == "Cyclical Perennial" and cbd > bd_mat:
+                    wgrn = 0.0
+                    hi = 0.0
+            
             # Save daily record
             active_produce_type = cp.get("crop_produce_type", "Fruit/Seed")
-            wroot = wgrn if active_produce_type == "Tuber/Root" else (wtop * 0.2)
             
             sim_data.append({
                 "crop_produce_type": active_produce_type,
@@ -1221,16 +1124,6 @@ class SSMiCropEngine:
                 "NLEACH": round(N_Leached_Daily, 4),
                 "NST": round(f_nutr, 3)
             })
-            
-            # Reset cyclical perennial grain pool at the end of the year's daily loop if mature
-            is_last_day_of_year = False
-            if step == total_steps - 1 or self.weather_df.iloc[step]["YEAR"] != self.weather_df.iloc[step + 1]["YEAR"]:
-                is_last_day_of_year = True
-                
-            if is_last_day_of_year:
-                if lifecycle_strategy == "Cyclical Perennial" and cbd > bd_mat:
-                    wgrn = 0.0
-                    hi = 0.0
             
         df = SimulationResultDataFrame(sim_data)
         df.diagnostic_df = pd.DataFrame(diagnostic_rows)

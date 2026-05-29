@@ -21,13 +21,23 @@ def import_master_crop_parameters(excel_path: str, db_path: str):
     logger.info(f"Importing crop parameters from spreadsheet: {excel_path}")
     df = pd.read_excel(excel_path, sheet_name="Crop", header=None)
     
+    from utils.excel_parser import SYNONYM_MAP
+
+    def map_term_to_engine_variable(raw_term: str) -> str:
+        clean_term = str(raw_term).strip().lower().replace(":", "")
+        for strict_var, synonyms in SYNONYM_MAP.items():
+            if clean_term == strict_var.lower() or clean_term in [syn.lower() for syn in synonyms]:
+                return strict_var
+        return raw_term
+
     # 1. Parse parameter names from Column 0, rows 6 to the end
     params_map = {}
     for r in range(6, df.shape[0]):
         var_label = df.iloc[r, 0]
         if pd.notna(var_label) and str(var_label).strip() != "":
             clean_name = str(var_label).split("=")[0].split("(")[0].strip()
-            params_map[r] = clean_name
+            engine_name = map_term_to_engine_variable(clean_name)
+            params_map[r] = engine_name
             
     # 2. Parse crop columns
     crop_records = []
@@ -47,10 +57,15 @@ def import_master_crop_parameters(excel_path: str, db_path: str):
                         param_dict[name] = str(val)
             
             # Map standard crop parameters aliases for engine compatibility
-            if "RUE_MAX" not in param_dict and "TBRUE" in param_dict:
-                param_dict["RUE_MAX"] = param_dict["TBRUE"]
-            if "IRUE" not in param_dict and "TBRUE" in param_dict:
+            if "RUE_MAX" not in param_dict and "IRUE" in param_dict:
+                param_dict["RUE_MAX"] = param_dict["IRUE"]
+            elif "IRUE" not in param_dict and "RUE_MAX" in param_dict:
+                param_dict["IRUE"] = param_dict["RUE_MAX"]
+            elif "IRUE" not in param_dict and "TBRUE" in param_dict:
                 param_dict["IRUE"] = param_dict["TBRUE"]
+                param_dict["RUE_MAX"] = param_dict["TBRUE"]
+
+            # General card temperature fallbacks
             if "TBD" not in param_dict:
                 param_dict["TBD"] = 8.0 # fallback default C4
             if "TP1D" not in param_dict:
@@ -129,6 +144,42 @@ def import_master_crop_parameters(excel_path: str, db_path: str):
                 param_dict["WSSD"] = 0.4
             if "FLDKL" not in param_dict:
                 param_dict["FLDKL"] = 20.0
+
+            # Sorghum phenology milestones fallbacks
+            if "bdEJUPNI" not in param_dict:
+                param_dict["bdEJUPNI"] = param_dict.get("bdR1R3", 4.0)
+            if "bdPNITLM" not in param_dict:
+                param_dict["bdPNITLM"] = 18.0
+            if "bdTLMANT" not in param_dict:
+                param_dict["bdTLMANT"] = 6.0
+            if "bdANTBSG" not in param_dict:
+                param_dict["bdANTBSG"] = 2.0
+            if "bdBSGPM" not in param_dict:
+                param_dict["bdBSGPM"] = 21.4
+            if "bdPMHM" not in param_dict:
+                param_dict["bdPMHM"] = 4.0
+
+            # Nitrogen parameter fallbacks
+            if "SLNG" not in param_dict:
+                param_dict["SLNG"] = 1.35
+            if "SLNS" not in param_dict:
+                param_dict["SLNS"] = 0.4
+            if "SNCG" not in param_dict:
+                param_dict["SNCG"] = 0.0106
+            if "SNCS" not in param_dict:
+                param_dict["SNCS"] = param_dict.get("SNCS2", param_dict.get("SNCS1", 0.0025))
+            if "GNC" not in param_dict:
+                param_dict["GNC"] = param_dict.get("GNCmin", 0.011)
+            if "MXNUP" not in param_dict:
+                param_dict["MXNUP"] = 0.6
+            if "SNAVL_init" not in param_dict:
+                param_dict["SNAVL_init"] = 150.0
+            if "leach_eff" not in param_dict:
+                param_dict["leach_eff"] = 0.8
+
+            # Tipping bucket parameters
+            if "tbt" not in param_dict:
+                param_dict["tbt"] = 1.0
                 
             crop_name_clean = crop_name.strip()
             cultivar_clean = cultivar.strip() if pd.notna(cultivar) else "Default"

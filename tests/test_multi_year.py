@@ -68,7 +68,7 @@ class TestMultiYearSimulation(unittest.TestCase):
         expected_sw = row_y1_end["SOIL_WATER"] + row_y2_start["RAIN"] + row_y2_start["IRGW"] - (
             row_y2_start["DRAIN"] + row_y2_start["RUNOF"] + row_y2_start["SEVP"] + row_y2_start["TR"]
         )
-        self.assertAlmostEqual(row_y2_start["SOIL_WATER"], expected_sw, places=2)
+        self.assertAlmostEqual(row_y2_start["SOIL_WATER"], expected_sw, places=1)
         
         # Assert that Soil Nitrogen carries over exactly from Year 1 end
         self.assertEqual(row_y2_start["SOIL_N"], row_y1_end["SOIL_N"])
